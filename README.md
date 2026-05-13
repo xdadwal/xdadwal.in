@@ -1,1 +1,2 @@
-# xdadwal.in is my personal website, currently under construction.
+# xdadwal.in
+This is my personal website, currently under construction.
