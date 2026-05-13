@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Projects — xdadwal.in{% endblock %}
+
+{% block content %}
+<main class="mt-[72px]">
+
+  <!-- ─── Hero ──────────────────────────────────────────────────────────────── -->
+  <section class="max-w-container-max mx-auto px-gutter py-section-gap border-b border-outline-variant">
+    <div class="max-w-4xl">
+      <h1 class="font-headline-xl text-headline-xl text-primary mb-8">Selected work and projects.</h1>
+      <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+        A collection of things I've built, explored, and shipped.
+      </p>
+    </div>
+  </section>
+
+  <!-- ─── Project Grid ──────────────────────────────────────────────────────── -->
+  <section class="max-w-container-max mx-auto px-gutter py-section-gap">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
+      {% for project in projects %}
+      <div class="border-t border-t-outline-variant hover:border-t-primary transition-colors duration-300 pt-8 flex flex-col">
+        <div class="flex items-start justify-between mb-3">
+          <h3 class="font-headline-md text-headline-md text-primary">{{ project.title }}</h3>
+          {% if project.url %}
+          <a href="{{ project.url }}" target="_blank" rel="noopener noreferrer"
+             class="text-on-surface-variant hover:text-primary transition-colors ml-4 flex-shrink-0 mt-1">
+            <span class="material-symbols-outlined text-[20px]">open_in_new</span>
+          </a>
+          {% endif %}
+        </div>
+        <p class="font-body-md text-body-md text-on-surface-variant mb-6 line-clamp-3">
+          {{ project.description }}
+        </p>
+        <div class="flex flex-wrap gap-3 mt-auto">
+          {% for tag in project.tags %}
+          <span class="font-code-sm text-code-sm text-on-surface-variant/40 uppercase">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ─── CTA ───────────────────────────────────────────────────────────────── -->
+  <section class="max-w-container-max mx-auto px-gutter py-section-gap border-t border-outline-variant">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-12">
+      <div class="max-w-xl">
+        <h2 class="font-headline-lg text-headline-lg text-primary mb-4">Interested in working together?</h2>
+        <p class="font-body-lg text-body-lg text-on-surface-variant">
+          Open to consulting, collaborations, and interesting problems.
+        </p>
+      </div>
+      <a href="mailto:hello@xdadwal.in"
+         class="border border-primary text-primary px-10 py-4 font-label-caps text-label-caps tracking-widest uppercase font-bold rounded-none hover:bg-primary hover:text-surface-container-lowest transition-all whitespace-nowrap">
+        Get in touch
+      </a>
+    </div>
+  </section>
+
+</main>
+{% endblock %}

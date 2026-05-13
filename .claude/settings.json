@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git status --short 2>/dev/null"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json,sys,subprocess,os; d=json.loads(sys.stdin.read()); f=d.get('tool_input',{}).get('file_path',''); (f.endswith('.py') and os.path.exists(f)) and (subprocess.run(['ruff','check','--fix',f],capture_output=True), subprocess.run(['ruff','format',f],capture_output=True))\" 2>/dev/null; true"
+          }
+        ]
+      }
+    ]
+  }
+}

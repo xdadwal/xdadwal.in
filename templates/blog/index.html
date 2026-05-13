@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Blog — xdadwal.in{% endblock %}
+
+{% block content %}
+<main class="max-w-container-max mx-auto px-gutter pt-[160px] pb-24"
+      x-data="{
+        open: false,
+        selected: 'All',
+        filterTag(tags) { return this.selected === 'All' || tags.includes(this.selected) }
+      }">
+
+  <!-- ─── Header ────────────────────────────────────────────────────────────── -->
+  <section class="mb-24">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-12 border-b border-outline-variant pb-16">
+      <div class="max-w-2xl">
+        <h1 class="font-headline-xl text-headline-xl mb-8 text-primary">Technical Archive.</h1>
+        <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+          Writing on systems, engineering, and the craft of building software.
+        </p>
+      </div>
+
+      {% if all_tags %}
+      <div class="relative shrink-0">
+        <button @click="open = !open"
+                class="flex items-center justify-between gap-4 px-6 py-3 border border-outline-variant hover:border-primary transition-colors text-on-surface-variant hover:text-primary min-w-[220px]">
+          <span class="font-label-caps text-label-caps tracking-widest uppercase"
+                x-text="selected === 'All' ? 'Filter by Tag' : selected"></span>
+          <span class="material-symbols-outlined text-[20px]">expand_more</span>
+        </button>
+        <div x-show="open"
+             @click.outside="open = false"
+             class="absolute right-0 top-full mt-1 w-full bg-surface-container-low border border-outline-variant z-20">
+          <button @click="selected = 'All'; open = false"
+                  class="w-full text-left px-6 py-4 font-label-caps text-label-caps tracking-widest text-primary hover:bg-surface-container-high transition-colors uppercase">
+            All Posts
+          </button>
+          {% for tag in all_tags %}
+          <button @click="selected = '{{ tag }}'; open = false"
+                  class="w-full text-left px-6 py-4 font-label-caps text-label-caps tracking-widest text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors uppercase">
+            {{ tag }}
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  {% if posts %}
+
+  <!-- ─── Featured Bento ────────────────────────────────────────────────────── -->
+  <section class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-24">
+
+    {# Featured: first post #}
+    {% set featured = posts[0] %}
+    <a href="/blog/{{ featured.slug }}"
+       x-show="filterTag({{ featured.tags | tojson }})"
+       class="md:col-span-8 group border border-outline-variant hover:border-primary bg-surface-container-low hover:bg-surface-container transition-all duration-300 p-12 flex flex-col justify-between min-h-[480px]">
+      <div>
+        <div class="flex items-center gap-6 mb-10">
+          <span class="font-code-sm text-code-sm text-primary uppercase">{{ featured.date.strftime('%b %Y') }}</span>
+          <span class="w-12 h-px bg-outline-variant"></span>
+          <span class="font-code-sm text-code-sm text-on-surface-variant uppercase">{{ featured.reading_time }} min read</span>
+        </div>
+        <h2 class="font-headline-lg text-headline-lg mb-8 text-primary leading-tight">{{ featured.title }}</h2>
+        <p class="font-body-md text-body-md text-on-surface-variant max-w-xl leading-relaxed">{{ featured.description }}</p>
+      </div>
+      <div class="flex items-center justify-between mt-10">
+        <div class="flex gap-3 flex-wrap">
+          {% for tag in featured.tags %}
+          <span class="font-code-sm text-code-sm border border-outline-variant text-primary px-4 py-1 uppercase">{{ tag }}</span>
+          {% endfor %}
+        </div>
+        <span class="material-symbols-outlined text-primary text-4xl group-hover:translate-x-3 transition-transform">
+          arrow_right_alt
+        </span>
+      </div>
+    </a>
+
+    {# Side cards: posts 1–2 #}
+    <div class="md:col-span-4 flex flex-col gap-gutter">
+      {% for post in posts[1:3] %}
+      <a href="/blog/{{ post.slug }}"
+         x-show="filterTag({{ post.tags | tojson }})"
+         class="border border-outline-variant hover:border-primary bg-surface-container-low hover:bg-surface-container transition-all duration-300 p-10 flex-1 group flex flex-col">
+        <span class="font-code-sm text-code-sm text-primary block mb-4 uppercase">{{ post.date.strftime('%b %Y') }}</span>
+        <h3 class="font-headline-md text-headline-md mb-4 text-primary leading-tight">{{ post.title }}</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed line-clamp-2 mb-6">{{ post.description }}</p>
+        {% if post.tags %}
+        <span class="font-code-sm text-code-sm border border-outline-variant text-primary px-4 py-1 uppercase mt-auto w-fit">
+          {{ post.tags[0] }}
+        </span>
+        {% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Archive list: posts 3+ #}
+  {% if posts | length > 3 %}
+  <section class="border-t border-outline-variant">
+    <h4 class="font-label-caps text-label-caps text-primary my-12 tracking-[0.2em] uppercase border-l-2 border-primary pl-6">
+      Archive
+    </h4>
+    {% for post in posts[3:] %}
+    <a href="/blog/{{ post.slug }}"
+       x-show="filterTag({{ post.tags | tojson }})"
+       class="flex flex-col md:flex-row gap-12 py-14 border-b border-outline-variant group hover:bg-surface-container-high transition-colors px-6 -mx-6 block">
+      <div class="md:w-1/4">
+        <div class="font-code-sm text-code-sm text-primary mb-2 font-bold uppercase">
+          {{ post.date.strftime('%b %d, %Y') }}
+        </div>
+        <div class="font-code-sm text-code-sm text-on-surface-variant uppercase">{{ post.reading_time }} min read</div>
+      </div>
+      <div class="md:w-2/4">
+        <h4 class="font-headline-md text-headline-md mb-4 text-primary">{{ post.title }}</h4>
+        <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">{{ post.description }}</p>
+      </div>
+      <div class="md:w-1/4 flex items-center md:justify-end gap-3 flex-wrap">
+        {% for tag in post.tags %}
+        <span class="font-code-sm text-code-sm text-primary border border-outline-variant px-3 py-1 uppercase">{{ tag }}</span>
+        {% endfor %}
+      </div>
+    </a>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {% else %}
+  <div class="py-24 text-center">
+    <p class="font-body-lg text-body-lg text-on-surface-variant">No posts yet. Check back soon.</p>
+  </div>
+  {% endif %}
+
+</main>
+{% endblock %}

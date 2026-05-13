@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+env/
+*.egg-info/
+dist/
+
+# Env
+.env
+.env.*
+
+# CSS build output
+static/css/output.css
+
+# Empty assets dir
+static/assets/
+
+# OS
+.DS_Store

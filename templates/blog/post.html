@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} — xdadwal.in{% endblock %}
+
+{% block content %}
+<main class="max-w-container-max mx-auto px-gutter pt-[140px] pb-section-gap">
+
+  <!-- ─── Post header ───────────────────────────────────────────────────────── -->
+  <header class="max-w-3xl mb-16 border-b border-outline-variant pb-16">
+    <div class="flex items-center gap-6 mb-8">
+      <span class="font-code-sm text-code-sm text-on-surface-variant uppercase">
+        {{ post.date.strftime('%b %d, %Y') }}
+      </span>
+      <span class="w-8 h-px bg-outline-variant"></span>
+      <span class="font-code-sm text-code-sm text-on-surface-variant uppercase">
+        {{ post.reading_time }} min read
+      </span>
+    </div>
+    <h1 class="font-headline-xl text-headline-lg-mobile md:text-headline-lg text-primary mb-8 leading-tight">
+      {{ post.title }}
+    </h1>
+    <p class="font-body-lg text-body-lg text-on-surface-variant mb-8">{{ post.description }}</p>
+    <div class="flex flex-wrap gap-3">
+      {% for tag in post.tags %}
+      <span class="font-code-sm text-code-sm border border-outline-variant text-primary px-4 py-1 uppercase">
+        {{ tag }}
+      </span>
+      {% endfor %}
+    </div>
+  </header>
+
+  <!-- ─── Post content ──────────────────────────────────────────────────────── -->
+  <article class="max-w-3xl post-content">
+    {{ post.content | safe }}
+  </article>
+
+  <!-- ─── Back ───────────────────────────────────────────────────────────────── -->
+  <div class="max-w-3xl mt-16 pt-16 border-t border-outline-variant">
+    <a href="/blog"
+       class="inline-flex items-center gap-3 text-on-surface-variant hover:text-primary transition-colors font-label-caps text-label-caps uppercase">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Back to Archive
+    </a>
+  </div>
+
+</main>
+{% endblock %}
