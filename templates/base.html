@@ -28,9 +28,9 @@
     </a>
 
     <nav class="hidden md:flex items-center gap-8">
-      <a href="/#experience"
+      <a href="/#about"
          class="font-label-caps text-label-caps uppercase {% if active_page == 'home' %}text-primary font-bold border-b-2 border-primary pb-1{% else %}text-on-surface-variant hover:text-primary transition-colors duration-200{% endif %}">
-        Experience
+        About
       </a>
       <a href="/projects"
          class="font-label-caps text-label-caps uppercase {% if active_page == 'projects' %}text-primary font-bold border-b-2 border-primary pb-1{% else %}text-on-surface-variant hover:text-primary transition-colors duration-200{% endif %}">
@@ -43,10 +43,6 @@
     </nav>
 
     <div class="flex items-center gap-4">
-      <a href="/static/resume.pdf" target="_blank"
-         class="hidden md:block border border-primary text-primary px-6 py-2 font-label-caps text-label-caps uppercase font-bold rounded-none hover:bg-primary hover:text-background transition-all">
-        Resume
-      </a>
       <button @click="open = !open"
               class="md:hidden text-primary p-1"
               aria-label="Toggle menu">
@@ -63,14 +59,12 @@
        @click.outside="open = false"
        class="md:hidden border-t border-outline-variant bg-background">
     <div class="px-gutter py-6 flex flex-col gap-6">
-      <a href="/#experience" @click="open = false"
-         class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors uppercase">Experience</a>
+      <a href="/#about" @click="open = false"
+         class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors uppercase">About</a>
       <a href="/projects" @click="open = false"
          class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors uppercase">Projects</a>
       <a href="/blog" @click="open = false"
          class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors uppercase">Blog</a>
-      <a href="/static/resume.pdf" target="_blank"
-         class="font-label-caps text-label-caps text-primary uppercase">Resume</a>
     </div>
   </div>
 </header>
@@ -83,17 +77,12 @@
   <div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
     <div class="flex flex-col items-center md:items-start gap-2">
       <span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">XDADWAL.IN</span>
-      <span class="font-code-sm text-code-sm text-on-surface-variant/40 uppercase tracking-widest">
-        Built with FastAPI, Alpine.js, and Tailwind CSS
-      </span>
     </div>
     <div class="flex gap-12">
-      <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+      <a href="https://github.com/brownbreadtoast" target="_blank" rel="noopener noreferrer"
          class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors uppercase">GitHub</a>
-      <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+      <a href="https://linkedin.com/in/dadwalakshay" target="_blank" rel="noopener noreferrer"
          class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors uppercase">LinkedIn</a>
-      <a href="mailto:hello@xdadwal.in"
-         class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors uppercase">Email</a>
     </div>
   </div>
 </footer>

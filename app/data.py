@@ -1,52 +1,62 @@
 EXPERIENCE: list[dict] = [
     {
-        "period": "2022 — Present",
-        "role": "Senior Software Engineer",
-        "company": "Your Company",
-        "description": "Add your experience description here. Describe key responsibilities, achievements, and the impact you made.",
-        "tags": ["Python", "FastAPI", "PostgreSQL"],
+        "company": "Detect Technologies",
+        "url": "https://detectinspections.com",
+        "period": "May 2025 — Present",
+        "roles": [
+            {
+                "title": "Software Development Engineer III",
+                "period": "May 2025 — Present",
+                "description": "Taking care of infrastructure, automations, observability, platform reliability and AI tooling.",
+                "tags": ["GCP", "K8S", "Datadog"],
+            },
+        ],
     },
     {
-        "period": "2019 — 2022",
-        "role": "Software Engineer",
-        "company": "Previous Company",
-        "description": "Add your previous experience here.",
-        "tags": ["Go", "Kubernetes", "Redis"],
+        "company": "Attentive.ai",
+        "url": "https://attentive.ai",
+        "period": "Jan 2022 — Mar 2025",
+        "roles": [
+            {
+                "title": "Software Engineer III",
+                "period": "Jan 2025 — Mar 2025",
+                "description": "Built a microservice to parse large PDFs and do fast searches.",
+                "tags": ["FastAPI", "Elasticsearch"],
+            },
+            {
+                "title": "Software Engineer II",
+                "period": "Jan 2022 — Dec 2024",
+                "description": "Led a team of 8 devs; built SaaS products; was super fun.",
+                "tags": ["Django", "Express.js", "MongoDB", "PostgreSQL", "Celery"],
+            },
+        ],
     },
     {
-        "period": "2017 — 2019",
-        "role": "Junior Developer",
-        "company": "First Company",
-        "description": "Where it all started.",
-        "tags": ["Python", "Django", "PostgreSQL"],
+        "company": "Renewbuy.com",
+        "url": "https://renewbuy.com",
+        "period": "Aug 2018 — Jan 2022",
+        "roles": [
+            {
+                "title": "Senior Software Engineer",
+                "period": "Apr 2021 — Jan 2022",
+                "description": "Primarily focused on platform reliability and experimental stuff.",
+                "tags": ["Kafka", "Debezium", "ETL", "Datadog", "FastAPI"],
+            },
+            {
+                "title": "Software Engineer",
+                "period": "Aug 2018 — Apr 2021",
+                "description": "Was a hyped-up kid, worked on anything and everything asked to.",
+                "tags": ["Python", "Django", "MySQL", "bash scripts"],
+            },
+        ],
     },
-]
-
-SKILLS: list[dict] = [
-    {"name": "Python",     "icon": "terminal"},
-    {"name": "FastAPI",    "icon": "api"},
-    {"name": "PostgreSQL", "icon": "database"},
-    {"name": "Docker",     "icon": "deployed_code"},
-    {"name": "AWS",        "icon": "cloud"},
 ]
 
 PROJECTS: list[dict] = [
     {
-        "title": "Project One",
-        "description": "A description of your first project. What problem does it solve? What makes it interesting?",
-        "tags": ["Python", "FastAPI"],
-        "url": None,
-    },
-    {
-        "title": "Project Two",
-        "description": "A description of your second project.",
-        "tags": ["Go", "gRPC"],
-        "url": None,
-    },
-    {
-        "title": "Project Three",
-        "description": "A description of your third project.",
-        "tags": ["Rust", "Systems"],
-        "url": None,
+        "title": "dex-cli",
+        "description": "A CLI tool to download manga from various platforms.",
+        "tags": ["Python", "CLI", "multi-threading"],
+        "url": "https://github.com/xdadwal/dex-cli",
     },
 ]

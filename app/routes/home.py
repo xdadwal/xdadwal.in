@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 
-from app.data import EXPERIENCE, SKILLS
+from app.data import EXPERIENCE
 from app.templates import templates
 
 router = APIRouter()
@@ -11,5 +11,5 @@ async def home(request: Request):
     return templates.TemplateResponse(
         request,
         "home.html",
-        {"active_page": "home", "experience": EXPERIENCE, "skills": SKILLS},
+        {"active_page": "home", "experience": EXPERIENCE},
     )

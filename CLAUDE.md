@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Personal website for xdadwal.in — home page (experience, skills, projects) and a blog.
+Personal website for xdadwal.in — home page (experience, projects) and a blog.
 
 **Stack:** FastAPI · Jinja2 templates · Alpine.js · Tailwind CSS (CLI, not CDN in production)
 
@@ -15,7 +15,7 @@ app/
   main.py              # FastAPI app instance, router registration, static mount
   config.py            # pydantic-settings config (env vars, loaded via get_settings())
   templates.py         # Jinja2Templates instance + custom filters
-  data.py              # EXPERIENCE, SKILLS, PROJECTS content
+  data.py              # EXPERIENCE, PROJECTS content
   routes/
     home.py            # GET /
     projects.py        # GET /projects
