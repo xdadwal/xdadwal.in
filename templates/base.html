@@ -28,9 +28,9 @@
     </a>
 
     <nav class="hidden md:flex items-center gap-8">
-      <a href="/#about"
+      <a href="/#home"
          class="font-label-caps text-label-caps uppercase {% if active_page == 'home' %}text-primary font-bold border-b-2 border-primary pb-1{% else %}text-on-surface-variant hover:text-primary transition-colors duration-200{% endif %}">
-        About
+        Home
       </a>
       <a href="/projects"
          class="font-label-caps text-label-caps uppercase {% if active_page == 'projects' %}text-primary font-bold border-b-2 border-primary pb-1{% else %}text-on-surface-variant hover:text-primary transition-colors duration-200{% endif %}">
@@ -59,8 +59,8 @@
        @click.outside="open = false"
        class="md:hidden border-t border-outline-variant bg-background">
     <div class="px-gutter py-6 flex flex-col gap-6">
-      <a href="/#about" @click="open = false"
-         class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors uppercase">About</a>
+      <a href="/#home" @click="open = false"
+         class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors uppercase">Home</a>
       <a href="/projects" @click="open = false"
          class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors uppercase">Projects</a>
       <a href="/blog" @click="open = false"
