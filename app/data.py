@@ -7,7 +7,10 @@ EXPERIENCE: list[dict] = [
             {
                 "title": "Software Development Engineer III",
                 "period": "May 2025 — Present",
-                "description": "Taking care of infrastructure, automations, observability, platform reliability and AI tooling.",
+                "description": (
+                    "Taking care of infrastructure, automations, observability, "
+                    "platform reliability and AI tooling."
+                ),
                 "tags": ["GCP", "K8S", "Datadog"],
             },
         ],

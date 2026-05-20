@@ -38,7 +38,8 @@ static/
   css/
     input.css          # Tailwind v4 source (@import + @theme tokens)
     output.css         # compiled output (do not edit by hand)
-pyproject.toml
+requirements.txt       # runtime dependencies
+ruff.toml              # ruff linter/formatter config
 ```
 
 ## Commands
@@ -51,18 +52,55 @@ lint:       ruff check . && ruff format --check .
 format:     ruff format . && ruff check --fix .
 ```
 
-> Tailwind is provided by `pytailwindcss` (a pip package — no Node/npm needed). `pip install -e .` installs everything including the `tailwindcss` binary.
+> Install deps with `pip install -r requirements.txt`. Tailwind is provided by `pytailwindcss` (a pip package — no Node/npm needed); installing it pulls in the `tailwindcss` binary automatically.
 
 ## Backend Guidelines
 
-- Python 3.11+; type hints on every function signature, every Pydantic model field
-- `X | None` syntax — never `Optional[X]`
+- Python 3.12+; type hints on every function signature (params + return) and every Pydantic model field
 - Route handlers in `app/routes/`; keep them thin — logic goes in service functions
 - `async def` for all route handlers; `def` for pure CPU-bound helpers only
 - Return `TemplateResponse` for HTML routes, Pydantic model responses for JSON endpoints
 - `HTTPException` for error responses — never return manual error dicts
 - Blog service reads `.md` files from `app/content/posts/` and parses frontmatter with `python-frontmatter`
 - App config via `pydantic-settings` in `app/config.py`; secrets from env vars only
+
+## Python Style
+
+PEP-8 with the conventions below, enforced by ruff (`ruff.toml` selects `E`, `F`, `I`, `UP`) and ruff-format. Pre-commit runs both on every commit.
+
+**Formatting** (ruff-format)
+- Line length: 100 (overrides PEP-8's 79)
+- 4-space indentation, no tabs
+- Double quotes for strings; single quotes only inside double-quoted strings
+- Trailing comma in multi-line collections and function signatures
+- Two blank lines between top-level defs, one blank line between methods
+
+**Naming**
+- `snake_case` for functions, variables, modules, and packages
+- `PascalCase` for classes (including Pydantic models, enums, exceptions)
+- `UPPER_SNAKE_CASE` for module-level constants (`EXPERIENCE`, `POSTS_DIR`)
+- `_leading_underscore` for module-private helpers; never shadow builtins (`list`, `dict`, `id`, `type`)
+
+**Imports** (`I` — isort)
+- Three groups separated by a blank line, alphabetical within each: stdlib → third-party → first-party (`app.*`)
+- One import per line; no `from module import *`
+- Imports at the top of the file only; never inside a function unless breaking a cycle
+
+**Modern syntax** (`UP` — pyupgrade)
+- `X | None` and `X | Y`, never `Optional[X]` or `Union[X, Y]`
+- `list[str]`, `dict[str, int]`, never `List[str]`, `Dict[str, int]`
+- f-strings, never `%` formatting or `str.format()`
+- `super()` with no args inside class methods
+
+**Correctness** (`F` — pyflakes)
+- No unused imports
+- No unused local variables — prefix with `_` if intentionally unused (e.g. `for _ in range(...)`)
+- No undefined names, no duplicate dict keys, no f-strings missing placeholders
+
+**Whitespace & layout** (`E` — pycodestyle)
+- No trailing whitespace; file ends with a single newline
+- One space after `,` and around binary operators; no space inside `()`, `[]`, `{}`
+- Comparisons to `None`/`True`/`False` use `is`/`is not`, never `==`/`!=`
 
 ## Frontend Guidelines
 
@@ -82,6 +120,7 @@ format:     ruff format . && ruff check --fix .
 
 - Posts as `.md` files in `app/content/posts/`
 - Required frontmatter: `title`, `date` (YYYY-MM-DD), `description`, `tags` (list), `reading_time` (int, minutes)
+- Optional frontmatter: `published` (bool, default `false`) — posts are hidden by default. Set to `true` to make them visible in the archive and via their direct URL. Flip back to `false` (or omit) to unpublish without deleting.
 - Slug derived from filename — lowercase, hyphenated, no special characters
 
 ## Skill Workflow

@@ -10,4 +10,5 @@ class BlogPost(BaseModel):
     tags: list[str]
     reading_time: int
     slug: str
+    published: bool = False
     content: str = ""
