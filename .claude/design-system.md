@@ -1,142 +1,50 @@
 # Design System
 
-Source of truth: `stitch-design.html` (3 pages: Home, Projects, Blog).
-This file extracts the tokens and patterns for quick reference.
+**Token values are defined once, in `static/css/input.css` under the Tailwind v4 `@theme` block.**
+That file is what compiles to `output.css`, so it is the single source of truth — add or change a
+token *there*, never redefine values here. This document is the layer the CSS can't capture: which
+token to reach for (usage), and the reusable component markup (patterns).
 
----
+Derived from the original Stitch mockups (Home, Projects, Blog), which are not checked into the
+repo.
 
-## Tailwind Config
+## How tokens work (Tailwind v4)
 
-Copy into `tailwind.config.js`. This is the full token set from the Stitch design.
+This project uses **Tailwind v4** — there is **no `tailwind.config.js`**. Instead:
 
-```js
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  darkMode: "class",
-  content: ["./templates/**/*.html", "./static/**/*.js"],
-  theme: {
-    extend: {
-      colors: {
-        "primary":                    "#ffffff",
-        "on-primary":                 "#2f3131",
-        "primary-container":          "#e2e2e2",
-        "primary-fixed":              "#e2e2e2",
-        "primary-fixed-dim":          "#c6c6c7",
-        "on-primary-fixed":           "#1a1c1c",
-        "on-primary-fixed-variant":   "#454747",
-        "inverse-primary":            "#5d5f5f",
-        "secondary":                  "#c8c6c5",
-        "on-secondary":               "#313030",
-        "secondary-container":        "#474746",
-        "on-secondary-container":     "#b7b5b4",
-        "secondary-fixed":            "#e5e2e1",
-        "secondary-fixed-dim":        "#c8c6c5",
-        "on-secondary-fixed":         "#1c1b1b",
-        "on-secondary-fixed-variant": "#474746",
-        "tertiary":                   "#ffffff",
-        "on-tertiary":                "#2f3131",
-        "tertiary-container":         "#e2e2e2",
-        "on-tertiary-container":      "#636565",
-        "tertiary-fixed":             "#e2e2e2",
-        "tertiary-fixed-dim":         "#c6c6c7",
-        "on-tertiary-fixed":          "#1a1c1c",
-        "on-tertiary-fixed-variant":  "#454747",
-        "error":                      "#ffb4ab",
-        "on-error":                   "#690005",
-        "error-container":            "#93000a",
-        "on-error-container":         "#ffdad6",
-        "background":                 "#131313",
-        "on-background":              "#e2e2e2",
-        "surface":                    "#131313",
-        "on-surface":                 "#e2e2e2",
-        "surface-variant":            "#353535",
-        "on-surface-variant":         "#c4c7c8",
-        "surface-tint":               "#c6c6c7",
-        "surface-dim":                "#131313",
-        "surface-bright":             "#393939",
-        "surface-container-lowest":   "#0e0e0e",
-        "surface-container-low":      "#1b1b1b",
-        "surface-container":          "#1f1f1f",
-        "surface-container-high":     "#2a2a2a",
-        "surface-container-highest":  "#353535",
-        "inverse-surface":            "#e2e2e2",
-        "inverse-on-surface":         "#303030",
-        "outline":                    "#8e9192",
-        "outline-variant":            "#444748",
-      },
-      borderRadius: {
-        DEFAULT: "0.25rem",
-        lg:      "0.5rem",
-        xl:      "0.75rem",
-        full:    "9999px",
-      },
-      spacing: {
-        "unit":            "8px",
-        "base":            "8px",
-        "gutter":          "24px",
-        "margin-desktop":  "64px",
-        "margin-mobile":   "16px",
-        "container-max":   "1200px",
-        "section-gap":     "120px",
-      },
-      fontFamily: {
-        "headline-xl":       ["Hanken Grotesk", "sans-serif"],
-        "headline-lg":       ["Hanken Grotesk", "sans-serif"],
-        "headline-lg-mobile":["Hanken Grotesk", "sans-serif"],
-        "headline-md":       ["Hanken Grotesk", "sans-serif"],
-        "body-lg":           ["Hanken Grotesk", "sans-serif"],
-        "body-md":           ["Hanken Grotesk", "sans-serif"],
-        "label-md":          ["Hanken Grotesk", "sans-serif"],
-        "label-caps":        ["JetBrains Mono", "monospace"],
-        "code-sm":           ["JetBrains Mono", "monospace"],
-      },
-      fontSize: {
-        "headline-xl":        ["64px", { lineHeight: "1.1",  letterSpacing: "-0.04em", fontWeight: "700" }],
-        "headline-lg":        ["48px", { lineHeight: "1.2",  letterSpacing: "-0.02em", fontWeight: "600" }],
-        "headline-lg-mobile": ["36px", { lineHeight: "1.2",  fontWeight: "600" }],
-        "headline-md":        ["32px", { lineHeight: "1.3",  fontWeight: "600" }],
-        "body-lg":            ["18px", { lineHeight: "1.6",  fontWeight: "400" }],
-        "body-md":            ["16px", { lineHeight: "1.6",  fontWeight: "400" }],
-        "label-md":           ["14px", { lineHeight: "1",    letterSpacing: "0.05em", fontWeight: "600" }],
-        "label-caps":         ["12px", { lineHeight: "1.0",  letterSpacing: "0.1em",  fontWeight: "500" }],
-        "code-sm":            ["14px", { lineHeight: "1.5",  fontWeight: "400" }],
-      },
-    },
-  },
-  plugins: [],
-}
-```
+- Tokens are CSS custom properties inside `@theme` in `static/css/input.css`: `--color-*`,
+  `--spacing-*`, `--text-*`, `--font-*`, `--radius*`. Tailwind generates the matching utilities
+  automatically (`--color-surface-container` → `bg-surface-container`, `--spacing-gutter` →
+  `px-gutter`, `--text-headline-xl` → `text-headline-xl`, etc.).
+- Content scanning is declared with `@source "../../templates/**/*.html"` in `input.css` (not a
+  `content: [...]` array).
+- Per-utility line-height / weight / tracking is applied via `@layer base` rules in `input.css`,
+  so `text-headline-xl` and friends carry their full type spec with no extra classes.
+- Fonts are loaded with `<link>` tags in `templates/base.html`. Body styling,
+  `.material-symbols-outlined`, and `.post-content` (rendered-markdown) styles also live in
+  `input.css`.
 
----
+Build: `tailwindcss -i static/css/input.css -o static/css/output.css --minify` (binary provided by
+`pytailwindcss`; no Node needed). `output.css` is generated — never hand-edit it.
 
-## Font Loading
+## Available tokens (utility names)
 
-Add to `<head>` in `base.html`:
+Full values are in `input.css`; this is the catalog of what exists so you reach for a token
+instead of a raw value.
 
-```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-```
-
-Base body CSS (add to `static/css/input.css`):
-
-```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-body {
-  -webkit-font-smoothing: antialiased;
-}
-
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-}
-```
-
----
+- **Colors** (use as `bg-*` / `text-*` / `border-*`): Material-3 roles —
+  `primary`/`on-primary`, `secondary`/`on-secondary`, `tertiary`, `error`/`on-error`,
+  `background`/`on-background`, `surface`/`on-surface`, the `surface-container{,-lowest,-low,
+  -high,-highest}` ramp, `surface-variant`/`on-surface-variant`, `outline`, `outline-variant`,
+  plus the `*-fixed` / `inverse-*` variants. See `@theme` for the exact set.
+- **Spacing** (`p-*`, `m-*`, `gap-*`, `w-*`, `max-w-*`): `unit`, `base`, `gutter`,
+  `margin-desktop`, `margin-mobile`, `container-max`, `section-gap`.
+- **Font family** (`font-*`): `headline-xl`, `headline-lg`, `headline-lg-mobile`, `headline-md`,
+  `body-lg`, `body-md`, `label-md`, `label-caps` (JetBrains Mono), `code-sm` (JetBrains Mono).
+- **Font size** (`text-*`): same names as the font families above — each pairs the size with its
+  line-height / weight / tracking via the `@layer base` rules.
+- **Radius** (`rounded`, `rounded-lg`, `rounded-xl`): default `0.25rem`, `lg`, `xl`. The design is
+  sharp-cornered by default — prefer `rounded-none`.
 
 ## Token Usage Quick Reference
 

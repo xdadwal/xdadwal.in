@@ -18,3 +18,8 @@ static/assets/
 
 # OS
 .DS_Store
+
+# --- Claude Code (managed by ccc) ---
+.claude/settings.local.json
+.claude/.ccc-source
+CLAUDE.local.md
