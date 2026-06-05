@@ -1,6 +1,6 @@
 # Project guide for Claude Code
 
-> Seeded from `ccc` v0.2.0, then tailored to this repo. The shared rules in `.claude/rules/`
+> Seeded from `ccc` v0.3.0, then tailored to this repo. The shared rules in `.claude/rules/`
 > still come from `ccc` — edit the canonical versions in your `ccc` checkout (not here) so
 > improvements flow to every repo, and run `/sync-config` to pull them back in. Project-specific
 > sections below are owned by this repo.
@@ -34,6 +34,9 @@ subagents are your team.
   - Find / trace / "where does X live" → **explorer**
   - Review the diff before committing → **reviewer**
   - A failing check, exception, or regression → **debugger**
+- **Learn as you go.** When you notice a recurring correction, friction, or a preference the user
+  teaches, **say so and propose** the specific skill/rule/hook to update — never change config
+  silently. Run `/reflect` for a deeper retrospective.
 
 ## Project Structure
 
