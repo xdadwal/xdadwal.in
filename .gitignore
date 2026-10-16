@@ -23,3 +23,5 @@ static/assets/
 .claude/settings.local.json
 .claude/.ccc-source
 CLAUDE.local.md
+
+.venv/
