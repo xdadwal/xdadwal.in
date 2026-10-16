@@ -1,0 +1,22 @@
+[Unit]
+Description=xdadwal.in portfolio
+After=network.target
+
+[Service]
+Type=simple
+User=akshay
+Group=akshay
+WorkingDirectory=/home/akshay/xdadwal.in
+ExecStart=/home/akshay/xdadwal.in/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8010 --proxy-headers --forwarded-allow-ips 127.0.0.1
+Restart=on-failure
+RestartSec=5
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
