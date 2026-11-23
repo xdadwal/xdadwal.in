@@ -50,22 +50,30 @@ app/
     home.py            # GET /
     projects.py        # GET /projects
     blog.py            # GET /blog, GET /blog/{slug}
+    assistant.py       # POST /api/chat, GET /api/chat/history, POST /api/chat/reset
   models/
     blog.py            # BlogPost Pydantic model
+    assistant.py       # assistant content-file and API models
   services/
     blog.py            # reads and parses .md files from content/posts/
+    assistant.py       # logpose agent, visitor sessions, SSE replies
+    assistant_content.py  # reads content/assistant/*.md, builds the system prompt
+    rate_limit.py      # in-memory limits for the chat endpoint
   content/
     posts/             # blog posts as .md files with frontmatter
+    assistant/         # everything the chat assistant knows and says (.md files)
 templates/
   base.html            # nav + footer layout; all pages extend this
   home.html
   projects/index.html
   blog/index.html
   blog/post.html
+  partials/assistant.html  # chat panel (Alpine component), included from base.html
 static/
   css/
     input.css          # Tailwind v4 source (@import + @theme tokens)
     output.css         # compiled output (do not edit by hand; gitignored)
+scripts/               # export_chats.py, show_context.py (run with python -m scripts.<name>)
 requirements.txt       # runtime + dev dependencies (pip)
 ruff.toml              # ruff linter/formatter config
 ```
@@ -162,6 +170,9 @@ ruff-format. Pre-commit runs both on every commit.
 - Required frontmatter: `title`, `date` (YYYY-MM-DD), `description`, `tags` (list), `reading_time` (int, minutes)
 - Optional frontmatter: `published` (bool, default `false`) — posts are hidden by default. Set to `true` to make them visible in the archive and via their direct URL. Flip back to `false` (or omit) to unpublish without deleting.
 - Slug derived from filename — lowercase, hyphenated, no special characters
+- Assistant copy lives only in `app/content/assistant/*.md` (`context.md` lists what the model is
+  given; `guardrails.md` and `panel.md` hold guard replies and panel text) — never in Python or
+  templates. Operational settings (model, limits, retention) stay in `app/config.py` / `.env`.
 
 ## Skill Workflow
 

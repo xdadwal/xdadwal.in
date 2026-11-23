@@ -17,6 +17,10 @@ PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=read-only
 UMask=0077
+# Writable /var/lib/portfolio for the assistant's chat database (the checkout is read-only here).
+StateDirectory=portfolio
+StateDirectoryMode=0700
+Environment=LOGPOSE_DB_PATH=/var/lib/portfolio/logpose.db
 
 [Install]
 WantedBy=multi-user.target
