@@ -175,6 +175,13 @@ Agent(
   the assistant itself** (so "hi" isn't blocked). `parallel` mode hides guard latency; a blocked
   message may cost a few main-model tokens. `on_error="allow"` so a guard outage doesn't take the
   chat down — instructions and rate limits still apply.
+  *Tuned 2026-11-24:* the original domain text at `on_topic_min: 0.5` blocked 53 of 142 genuine
+  test questions, because the judge cannot see the resume. The domain text was rewritten (it now
+  names his projects, employers and the kinds of short question visitors type) and the threshold
+  lowered to `0.2`: 0 of 142 genuine questions blocked, 62 of 67 off-topic and 16 of 16 unsafe
+  messages blocked. `instructions.md` carries the same off-topic rule for whatever gets through.
+  The domain text is collapsed to one line when loaded, since the judge's scores shift when its
+  line breaks move.
 - **Compaction** stays on (logpose default) with a 16k input budget; summaries persist with the
   session. The system prompt counts toward the budget — if the assembled prompt exceeds ~8k tokens,
   raise `context_budget`.

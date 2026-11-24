@@ -43,7 +43,10 @@ def _validate[T: BaseModel](model: type[T], name: str, data: dict[str, object]) 
 
 def load_guardrails() -> GuardrailContent:
     post = _load("guardrails.md")
-    return _validate(GuardrailContent, "guardrails.md", {**post.metadata, "domain": post.content})
+    # One line: the topic check scores the same text differently when its line breaks move, so
+    # re-wrapping the paragraph in an editor must not change what the judge is sent.
+    domain = " ".join(post.content.split())
+    return _validate(GuardrailContent, "guardrails.md", {**post.metadata, "domain": domain})
 
 
 def load_panel() -> PanelContent:

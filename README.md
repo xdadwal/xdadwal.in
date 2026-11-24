@@ -17,11 +17,15 @@ restart the site; no code changes are needed.
 | `context.md` | Which sources the model is given, and in what order |
 | `instructions.md` | Voice, scope, topics it declines |
 | `resume.md`, `knowledge/*.md` | The facts it answers from |
-| `guardrails.md` | Message length cap, topic check thresholds, replies to blocked messages |
+| `guardrails.md` | Message length cap, topic check wording and thresholds, replies to blocked messages |
 | `panel.md` | Greeting, placeholder and starter questions for the ask bar and chat panel |
 
 `python -m scripts.show_context` prints the size of each source the model receives
 (`--full` prints the whole prompt).
+
+The topic check judges each message against the paragraph in `guardrails.md` alone; it never
+sees the resume. When you add a project, employer or notable tool to the resume, name it in that
+paragraph too, or short questions about it may be blocked.
 
 ### Settings
 
