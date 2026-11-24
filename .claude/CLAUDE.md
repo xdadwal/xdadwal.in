@@ -7,7 +7,7 @@
 
 ## Project
 
-Personal website for xdadwal.in — home page (experience, projects) and a blog.
+Personal website for xdadwal.in — home page, projects page and a blog.
 
 **Stack:** FastAPI · Jinja2 templates · Alpine.js · Tailwind CSS (CLI via `pytailwindcss`, not CDN
 in production). Python 3.12+. Dark-mode only.
@@ -45,27 +45,36 @@ app/
   main.py              # FastAPI app instance, router registration, static mount
   config.py            # pydantic-settings config (env vars, loaded via get_settings())
   templates.py         # Jinja2Templates instance + custom filters
-  data.py              # EXPERIENCE, PROJECTS content
+  data.py              # PROJECTS content
   routes/
     home.py            # GET /
     projects.py        # GET /projects
     blog.py            # GET /blog, GET /blog/{slug}
+    assistant.py       # POST /api/chat, GET /api/chat/history, POST /api/chat/reset, POST /api/chat/feedback
   models/
     blog.py            # BlogPost Pydantic model
+    assistant.py       # assistant content-file and API models
   services/
     blog.py            # reads and parses .md files from content/posts/
+    assistant.py       # logpose agent, visitor sessions, SSE replies
+    assistant_content.py  # reads content/assistant/*.md, builds the system prompt
+    rate_limit.py      # in-memory limits for the chat endpoint
+    feedback.py        # visitors' thumbs up/down on answers (SQLite)
   content/
     posts/             # blog posts as .md files with frontmatter
+    assistant/         # everything the chat assistant knows and says (.md files)
 templates/
   base.html            # nav + footer layout; all pages extend this
   home.html
   projects/index.html
   blog/index.html
   blog/post.html
+  partials/assistant.html  # chat panel (Alpine component), included from base.html
 static/
   css/
     input.css          # Tailwind v4 source (@import + @theme tokens)
     output.css         # compiled output (do not edit by hand; gitignored)
+scripts/               # export_chats.py, show_context.py, show_feedback.py (python -m scripts.<name>)
 requirements.txt       # runtime + dev dependencies (pip)
 ruff.toml              # ruff linter/formatter config
 ```
@@ -118,7 +127,7 @@ ruff-format. Pre-commit runs both on every commit.
 **Naming**
 - `snake_case` for functions, variables, modules, and packages
 - `PascalCase` for classes (including Pydantic models, enums, exceptions)
-- `UPPER_SNAKE_CASE` for module-level constants (`EXPERIENCE`, `POSTS_DIR`)
+- `UPPER_SNAKE_CASE` for module-level constants (`PROJECTS`, `POSTS_DIR`)
 - `_leading_underscore` for module-private helpers; never shadow builtins (`list`, `dict`, `id`, `type`)
 
 **Imports** (`I` — isort)
@@ -162,6 +171,9 @@ ruff-format. Pre-commit runs both on every commit.
 - Required frontmatter: `title`, `date` (YYYY-MM-DD), `description`, `tags` (list), `reading_time` (int, minutes)
 - Optional frontmatter: `published` (bool, default `false`) — posts are hidden by default. Set to `true` to make them visible in the archive and via their direct URL. Flip back to `false` (or omit) to unpublish without deleting.
 - Slug derived from filename — lowercase, hyphenated, no special characters
+- Assistant copy lives only in `app/content/assistant/*.md` (`context.md` lists what the model is
+  given; `guardrails.md` and `panel.md` hold guard replies and panel text) — never in Python or
+  templates. Operational settings (model, limits, retention) stay in `app/config.py` / `.env`.
 
 ## Skill Workflow
 

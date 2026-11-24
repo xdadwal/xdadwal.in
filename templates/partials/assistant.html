@@ -1,0 +1,522 @@
+{# Assistant: a floating ask bar that opens the chat panel. All visible copy comes from
+   app/content/assistant/panel.md. #}
+{% if assistant_panel %}
+{# `contents` keeps this wrapper out of the page layout, so the bar below is a direct flex child
+   of <body> and can stick to the bottom of the screen until the footer scrolls into view. #}
+<div x-data="assistant()" @keydown.window="onKey($event)" class="contents"
+     data-contact-subject="{{ assistant_panel.contact_subject }}"
+     data-contact-body="{{ assistant_panel.contact_body }}">
+
+  <!-- Ask bar: floats at the bottom of the screen while scrolling, and rests just above the
+       footer at the end of the page. Kept in the layout (invisible) while the panel is open so
+       the page does not jump. -->
+  <div :class="{ 'invisible': open }"
+       class="sticky bottom-0 z-40 px-gutter py-4 pointer-events-none">
+    <form @submit.prevent="askFromBar()"
+          class="pointer-events-auto mx-auto max-w-assistant-panel flex items-center gap-3 px-4 py-3 border border-outline-variant bg-surface-container/90 backdrop-blur-md focus-within:border-outline transition-colors duration-200">
+      <span class="material-symbols-outlined text-on-surface-variant" aria-hidden="true">auto_awesome</span>
+      <label for="assistant-bar-input" class="sr-only">{{ assistant_panel.placeholder }}</label>
+      <input id="assistant-bar-input" type="text" x-model="draft" autocomplete="off"
+             placeholder="{{ assistant_panel.placeholder }}"
+             class="flex-1 min-w-0 bg-transparent font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none" />
+      <button type="submit"
+              class="p-1 rounded-none bg-primary text-on-primary transition-colors duration-200"
+              aria-label="Ask the assistant">
+        <span class="material-symbols-outlined">arrow_upward</span>
+      </button>
+    </form>
+  </div>
+
+  <aside x-show="open" x-cloak
+         x-transition:enter="transition-transform duration-200"
+         x-transition:enter-start="translate-x-full"
+         x-transition:enter-end="translate-x-0"
+         x-transition:leave="transition-transform duration-150"
+         x-transition:leave-start="translate-x-0"
+         x-transition:leave-end="translate-x-full"
+         class="fixed inset-y-0 right-0 z-60 w-full md:w-assistant-panel flex flex-col bg-surface-container-low border-l border-outline-variant"
+         role="dialog" aria-label="Assistant">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-gutter py-4 border-b border-outline-variant">
+      <span class="flex items-center gap-2 font-label-caps text-label-caps text-primary tracking-widest uppercase">
+        <span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
+        Assistant
+      </span>
+      <div class="flex items-center gap-2">
+        <button type="button" @click="newChat()"
+                class="p-1 rounded-none text-on-surface-variant hover:text-primary transition-colors duration-200"
+                aria-label="New chat">
+          <span class="material-symbols-outlined">add</span>
+        </button>
+        <button type="button" @click="close()"
+                class="p-1 rounded-none text-on-surface-variant hover:text-primary transition-colors duration-200"
+                aria-label="Close assistant">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div x-ref="list" class="flex-1 overflow-y-auto px-gutter py-6 flex flex-col gap-6" aria-live="polite" :aria-busy="streaming">
+
+      <!-- Empty state -->
+      <div x-show="messages.length === 0" class="flex flex-col gap-4">
+        <p class="font-body-md text-body-md text-on-surface-variant">{{ assistant_panel.greeting }}</p>
+        {% for question in assistant_panel.starters %}
+        <button type="button" data-q="{{ question }}" @click="ask($el.dataset.q)"
+                class="text-left px-4 py-3 rounded-none border border-outline-variant font-body-md text-body-md text-on-surface hover:bg-surface-container-high transition-colors duration-200">
+          {{ question }}
+        </button>
+        {% endfor %}
+      </div>
+
+      <template x-for="(message, index) in messages" :key="index">
+        <div class="flex flex-col gap-2">
+
+          <!-- Visitor -->
+          <template x-if="message.role === 'user'">
+            <div class="flex flex-col items-end gap-2">
+              <p x-text="message.text"
+                 class="max-w-full px-4 py-2 bg-surface-container-high font-body-md text-body-md text-on-surface whitespace-pre-wrap break-words"></p>
+              <button type="button" x-show="message.failed && !streaming" @click="retry(index)"
+                      class="flex items-center gap-1 rounded-none font-label-caps text-label-caps text-error uppercase hover:text-primary transition-colors duration-200">
+                <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+                Not sent · Retry
+              </button>
+            </div>
+          </template>
+
+          <!-- Assistant -->
+          <template x-if="message.role === 'assistant'">
+            <div class="flex flex-col items-start gap-2">
+              {# The answer is plain text; web addresses, email addresses and site paths in it are
+                 shown as links. The paragraph preserves whitespace, so the tags inside it are
+                 joined with whitespace-trimming comments rather than line breaks. #}
+              <p x-show="message.text"
+                 class="font-body-md text-body-md text-on-surface-variant whitespace-pre-wrap break-words">
+                {#- -#}
+                <template x-for="(part, at) in segments(message.text)" :key="at">
+                  {#- -#}
+                  <span>
+                    {#- -#}
+                    <template x-if="part.href">
+                      {#- -#}
+                      <a :href="part.href" x-text="part.text"
+                         :target="part.external ? '_blank' : null"
+                         :rel="part.external ? 'noopener noreferrer' : null"
+                         class="text-primary underline underline-offset-4 decoration-outline hover:decoration-primary transition-colors duration-200"></a>
+                      {#- -#}
+                    </template>
+                    {#- -#}
+                    <template x-if="!part.href">
+                      {#- -#}
+                      <span x-text="part.text"></span>
+                      {#- -#}
+                    </template>
+                    {#- -#}
+                  </span>
+                  {#- -#}
+                </template>
+                {#- -#}
+              </p>
+              <p x-show="!message.text && streaming && index === messages.length - 1"
+                 class="font-label-caps text-label-caps text-outline uppercase animate-pulse">Thinking</p>
+
+              <!-- Shown once the answer has finished -->
+              <div x-show="message.text && !(streaming && index === messages.length - 1)"
+                   class="flex flex-col items-start gap-2">
+                {% if assistant_panel.contact_label %}
+                <template x-if="contactHref(index)">
+                  <a :href="contactHref(index)" @click.prevent="contact(index)"
+                     class="flex items-center gap-2 px-3 py-2 rounded-none border border-outline-variant font-label-caps text-label-caps text-on-surface uppercase hover:bg-surface-container-high transition-colors duration-200">
+                    <span class="material-symbols-outlined" aria-hidden="true"
+                          x-text="contacted === index ? 'check' : 'mail'">mail</span>
+                    {% if assistant_panel.contact_copied %}
+                    <span x-show="contacted !== index">{{ assistant_panel.contact_label }}</span>
+                    <span x-show="contacted === index" aria-live="polite">{{ assistant_panel.contact_copied }}</span>
+                    {% else %}
+                    {{ assistant_panel.contact_label }}
+                    {% endif %}
+                  </a>
+                </template>
+                {% endif %}
+                <div class="flex items-center gap-1">
+                  <button type="button" @click="copy(message.text, index)"
+                          class="p-1 rounded-none text-outline hover:text-primary transition-colors duration-200"
+                          aria-label="Copy answer">
+                    <span class="material-symbols-outlined" x-text="copied === index ? 'check' : 'content_copy'">content_copy</span>
+                  </button>
+                  <!-- Only answers given since the page loaded can be rated: earlier ones come
+                       back from history without the ID a rating is filed under. -->
+                  <template x-if="message.id">
+                    <div class="flex items-center gap-1">
+                      <button type="button" @click="rate(message, 'up')"
+                              :aria-pressed="message.rating === 'up'"
+                              :class="message.rating === 'up' ? 'text-primary' : 'text-outline'"
+                              class="p-1 rounded-none hover:text-primary transition-colors duration-200"
+                              aria-label="Good answer">
+                        <span class="material-symbols-outlined">thumb_up</span>
+                      </button>
+                      <button type="button" @click="rate(message, 'down')"
+                              :aria-pressed="message.rating === 'down'"
+                              :class="message.rating === 'down' ? 'text-primary' : 'text-outline'"
+                              class="p-1 rounded-none hover:text-primary transition-colors duration-200"
+                              aria-label="Bad answer">
+                        <span class="material-symbols-outlined">thumb_down</span>
+                      </button>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </template>
+
+        </div>
+      </template>
+
+      <p x-show="notice" x-text="notice" role="status"
+         class="font-body-md text-label-md text-error"></p>
+    </div>
+
+    <!-- Composer -->
+    <div class="px-gutter pb-gutter">
+      <form @submit.prevent="send()"
+            class="flex items-end gap-2 p-3 border border-outline-variant bg-surface-container focus-within:border-outline transition-colors duration-200">
+        <label for="assistant-input" class="sr-only">{{ assistant_panel.placeholder }}</label>
+        <textarea id="assistant-input" x-ref="input" x-model="draft" rows="2"
+                  placeholder="{{ assistant_panel.placeholder }}"
+                  @keydown.enter="onEnter($event)"
+                  class="flex-1 resize-none bg-transparent font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none"></textarea>
+        <button type="submit" x-show="!streaming" :disabled="!draft.trim()"
+                class="p-1 rounded-none bg-primary text-on-primary disabled:bg-surface-container-highest disabled:text-outline transition-colors duration-200"
+                aria-label="Send">
+          <span class="material-symbols-outlined">arrow_upward</span>
+        </button>
+        <button type="button" x-show="streaming" @click="stop()"
+                class="p-1 rounded-none bg-primary text-on-primary transition-colors duration-200"
+                aria-label="Stop">
+          <span class="material-symbols-outlined">stop</span>
+        </button>
+      </form>
+      {% if assistant_panel.credit %}
+      <p class="mt-3 text-center font-label-caps text-label-caps text-outline uppercase">
+        {% if assistant_panel.credit_url %}
+        <a href="{{ assistant_panel.credit_url }}" target="_blank" rel="noopener noreferrer"
+           class="hover:text-primary transition-colors duration-200">{{ assistant_panel.credit }}</a>
+        {% else %}
+        <span>{{ assistant_panel.credit }}</span>
+        {% endif %}
+      </p>
+      {% endif %}
+    </div>
+  </aside>
+</div>
+
+<script>
+  // Alpine cannot parse a streamed response on its own, so the component's logic lives here.
+  function assistant() {
+    const TRY_AGAIN = "Couldn't reach the assistant. Check your connection and try again.";
+    const NO_ANSWER = 'No answer came back. Try rephrasing your question.';
+    // What gets linked in an answer: web addresses, email addresses, and paths on this site.
+    const LINKS = /https?:\/\/[^\s<>"']+|[A-Za-z0-9._+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+|\/(?:blog|projects)(?:\/[A-Za-z0-9_-]+)*/g;
+    const EMAIL = /[A-Za-z0-9._+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/;
+
+    return {
+      open: false,
+      loaded: false,
+      loading: false,
+      messages: [],
+      draft: '',
+      streaming: false,
+      notice: '',
+      copied: null,
+      contacted: null,
+      controller: null,
+
+      init() {
+        this.open = this.recall('assistant.open');
+        if (this.open) this.loadHistory();
+      },
+
+      // sessionStorage can be unavailable (private windows, blocked site data); the panel then
+      // simply starts closed on each page.
+      recall(key) {
+        try { return sessionStorage.getItem(key) === '1'; } catch (error) { return false; }
+      },
+      remember(key, value) {
+        try { sessionStorage.setItem(key, value ? '1' : '0'); } catch (error) { /* see recall() */ }
+      },
+
+      toggle() { this.open ? this.close() : this.show(); },
+      show() {
+        this.open = true;
+        this.remember('assistant.open', true);
+        this.loadHistory();
+        this.$nextTick(() => this.$refs.input.focus());
+      },
+      close() {
+        this.open = false;
+        this.remember('assistant.open', false);
+      },
+      // From the floating bar: open the panel, show the earlier conversation, then send.
+      async askFromBar() {
+        if (!this.draft.trim()) { this.show(); return; }
+        this.open = true;
+        this.remember('assistant.open', true);
+        await this.loadHistory();
+        this.send();
+      },
+      onKey(event) {
+        if (event.key === 'Escape' && this.open) this.close();
+      },
+      onEnter(event) {
+        if (event.shiftKey || event.isComposing) return;
+        event.preventDefault();
+        this.send();
+      },
+      scrollDown() {
+        this.$nextTick(() => { this.$refs.list.scrollTop = this.$refs.list.scrollHeight; });
+      },
+
+      async loadHistory() {
+        if (this.loaded || this.loading) return;
+        this.loading = true;
+        try {
+          const response = await fetch('/api/chat/history');
+          if (!response.ok) return;
+          const items = await response.json();
+          // Don't overwrite a conversation or new chat the visitor started while history was loading.
+          if (!this.loaded) {
+            this.messages = items.map((item) => this.message(item.role, item.text));
+            this.scrollDown();
+          }
+          this.loaded = true;
+        } catch (error) {
+          // History is a convenience: without it the panel opens empty and still works.
+          console.warn('assistant: could not load history', error);
+        } finally {
+          this.loading = false;
+        }
+      },
+
+      ask(text) {
+        this.send(text);
+      },
+
+      // `id` arrives when an answer finishes; `rating` is the visitor's thumbs up or down on it.
+      message(role, text) {
+        return { role, text, failed: false, id: null, rating: null };
+      },
+
+      // Split an answer into plain text and links. Hrefs are built only from the three patterns
+      // in LINKS, so nothing the model writes can produce any other kind of link.
+      segments(text) {
+        const parts = [];
+        let from = 0;
+        for (const match of text.matchAll(LINKS)) {
+          let found = match[0];
+          const isPath = found.startsWith('/');
+          // A path counts only at the start of a word, so the "/blog" inside a web address or
+          // "and/or" is left alone.
+          if (isPath && match.index > 0 && !/[\s(]/.test(text[match.index - 1])) continue;
+          // Punctuation that ends the sentence is not part of the address.
+          found = found.replace(/[.,;:!?)\]]+$/, '');
+          if (!found) continue;
+          if (match.index > from) parts.push({ text: text.slice(from, match.index) });
+          const isEmail = !isPath && !/^https?:\/\//.test(found);
+          parts.push({
+            text: found,
+            href: isEmail ? `mailto:${found}` : found,
+            external: !isPath && !isEmail,
+          });
+          from = match.index + found.length;
+        }
+        if (from < text.length) parts.push({ text: text.slice(from) });
+        return parts;
+      },
+
+      // A ready-to-send email to the address an answer gives, quoting the question that led to it.
+      contactHref(index) {
+        const found = this.messages[index].text.match(EMAIL);
+        if (!found) return null;
+        const asked = this.messages[index - 1];
+        const question = asked && asked.role === 'user' ? asked.text : '';
+        const { contactSubject, contactBody } = this.$root.dataset;
+        const fields = [];
+        if (contactSubject) fields.push(`subject=${encodeURIComponent(contactSubject)}`);
+        if (contactBody) {
+          // A function, so that "$" in the question is not read as a replacement pattern.
+          fields.push(`body=${encodeURIComponent(contactBody.replace('{question}', () => question))}`);
+        }
+        return `mailto:${found[0]}${fields.length ? `?${fields.join('&')}` : ''}`;
+      },
+
+      // Copy the address, then open the draft. Plenty of visitors have no mail app set up, and
+      // for them the mail link alone does nothing useful; the copied address still gets them there.
+      async contact(index) {
+        const href = this.contactHref(index);
+        const address = this.messages[index].text.match(EMAIL)[0];
+        try {
+          await navigator.clipboard.writeText(address);
+          this.contacted = index;
+          setTimeout(() => { if (this.contacted === index) this.contacted = null; }, 2500);
+        } catch {
+          // Copying is the extra here: without it the button is still a plain mail link.
+        }
+        window.location.href = href;
+      },
+
+      async rate(message, rating) {
+        if (!message.id || message.rating === rating) return;
+        const before = message.rating;
+        message.rating = rating;
+        try {
+          const response = await fetch('/api/chat/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: message.id, rating }),
+          });
+          if (!response.ok) throw new Error(`rating failed: ${response.status}`);
+        } catch (error) {
+          console.warn('assistant: could not save the rating', error);
+          message.rating = before;
+          // While a reply is streaming, the notice line belongs to that reply's own errors.
+          if (!this.streaming) this.notice = "Couldn't save your rating. Try again.";
+        }
+      },
+
+      retry(index) {
+        if (this.streaming) return;
+        const text = this.messages[index].text;
+        // Drop the failed question and anything shown after it, then send it again.
+        this.messages.splice(index);
+        this.send(text);
+      },
+
+      async send(preset) {
+        const text = (preset ?? this.draft).trim();
+        if (!text || this.streaming) return;
+        if (preset === undefined) this.draft = '';
+        this.notice = '';
+        this.loaded = true;
+
+        this.messages.push(this.message('user', text), this.message('assistant', ''));
+        // Read them back through Alpine's reactive proxy so later edits re-render.
+        const mine = this.messages[this.messages.length - 2];
+        const reply = this.messages[this.messages.length - 1];
+        this.streaming = true;
+        this.controller = new AbortController();
+        this.scrollDown();
+
+        let saved = false;
+        let retryable = true;
+        try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text, page: location.pathname }),
+            signal: this.controller.signal,
+          });
+          if (response.status === 429) {
+            this.notice = "You're sending messages quickly. Try again in a few minutes.";
+          } else if (response.status === 409) {
+            this.notice = 'A reply is still in progress in another tab.';
+          } else if (!response.ok || !response.body) {
+            this.notice = TRY_AGAIN;
+          } else {
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+            while (true) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              buffer += decoder.decode(value, { stream: true });
+              let end;
+              while ((end = buffer.indexOf('\n\n')) >= 0) {
+                const frame = this.parseFrame(buffer.slice(0, end));
+                buffer = buffer.slice(end + 2);
+                if (!frame) continue;
+                if (frame.event === 'delta') {
+                  reply.text += frame.data.text;
+                  this.scrollDown();
+                } else if (frame.event === 'done') {
+                  saved = true;
+                  reply.id = frame.data.id || null;
+                } else if (frame.event === 'error') {
+                  this.notice = frame.data.message;
+                  retryable = frame.data.retry !== false;
+                  saved = !retryable;
+                }
+              }
+            }
+            if (!saved && !this.notice) this.notice = TRY_AGAIN;
+            if (saved && !reply.text && !this.notice) this.notice = NO_ANSWER;
+          }
+        } catch (error) {
+          if (error.name === 'AbortError') {
+            // The visitor pressed stop: keep what was shown, offer nothing.
+            retryable = false;
+          } else {
+            console.warn('assistant: request failed', error);
+            this.notice = TRY_AGAIN;
+          }
+        } finally {
+          this.streaming = false;
+          this.controller = null;
+          if (!saved && retryable) mine.failed = true;
+          // The list may have been replaced meanwhile (new chat), so look the reply up again.
+          const at = this.messages.indexOf(reply);
+          if (!reply.text && at >= 0) this.messages.splice(at, 1);
+          this.scrollDown();
+        }
+      },
+
+      parseFrame(frame) {
+        let event = 'message';
+        let data = '';
+        for (const line of frame.split('\n')) {
+          if (line.startsWith('event: ')) event = line.slice(7);
+          else if (line.startsWith('data: ')) data += line.slice(6);
+        }
+        if (!data) return null;
+        try {
+          return { event, data: JSON.parse(data) };
+        } catch (error) {
+          console.warn('assistant: unreadable frame', frame);
+          return null;
+        }
+      },
+
+      stop() {
+        if (this.controller) this.controller.abort();
+      },
+
+      async newChat() {
+        this.stop();
+        try {
+          const response = await fetch('/api/chat/reset', { method: 'POST' });
+          if (!response.ok) throw new Error(`reset failed: ${response.status}`);
+          this.messages = [];
+          this.notice = '';
+          this.loaded = true;
+          this.$refs.input.focus();
+        } catch (error) {
+          console.warn('assistant: could not start a new chat', error);
+          this.notice = "Couldn't start a new chat. Try again.";
+        }
+      },
+
+      copy(text, index) {
+        navigator.clipboard.writeText(text).then(
+          () => {
+            this.copied = index;
+            setTimeout(() => { if (this.copied === index) this.copied = null; }, 1500);
+          },
+          () => { this.notice = "Couldn't copy. Select the text instead."; },
+        );
+      },
+    };
+  }
+</script>
+{% endif %}
