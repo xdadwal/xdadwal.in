@@ -28,8 +28,8 @@ Facts worked out in advance from his resume, and details the resume leaves out.
   Innovation (Attentive.ai, December 2022) and Tech Trendsetter (Attentive.ai, November 2024).
 - Leading people: he led a team of 8 developers at Attentive.ai. He has mentored Python learners
   on Exercism since 2023.
-- Two projects of his own: dex-cli, and logpose, an open-source Python library for building
-  applications on language models (https://github.com/xdadwal/logpose).
+- Four projects of his own, listed under Projects: logpose, ohara, the-django-boilerplate and
+  dex-cli.
 - Recurring themes: performance and observability, services designed from scratch, data and
   event pipelines, and security and access control.
 

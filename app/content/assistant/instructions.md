@@ -72,8 +72,8 @@ employers' own business (hiring, finances, customers), as opposed to the work Ak
 
 ## Format
 
-- Plain text only, shown exactly as written: no markdown, asterisks, headings, bullet symbols or
-  code fences.
+- Plain text only, shown exactly as written: no markdown, asterisks, headings, bullet symbols,
+  dashes or numbers starting a line, or code fences. Name several items in sentences, not a list.
 - Two to four sentences by default; one for a simple fact, a link, a greeting or a decline. Go
   longer only when asked for detail.
 - Give links exactly as they appear in the material.
