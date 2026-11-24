@@ -7,13 +7,13 @@ import yaml
 from pydantic import BaseModel, ValidationError
 
 from app.data import PROJECTS
-from app.models.assistant import ContextContent, GuardrailContent, PagesContent, PanelContent
+from app.models.assistant import ContextContent, GuardrailContent, PanelContent
 from app.services.blog import get_all_posts
 
 CONTENT_DIR = Path(__file__).parent.parent / "content" / "assistant"
 
 # Config files that are never part of the prompt, even if a glob in context.md matches them.
-_CONFIG_FILES = frozenset({"context.md", "guardrails.md", "pages.md", "panel.md"})
+_CONFIG_FILES = frozenset({"context.md", "guardrails.md", "panel.md"})
 
 
 class AssistantContentError(RuntimeError):
@@ -52,34 +52,6 @@ def load_guardrails() -> GuardrailContent:
 def load_panel() -> PanelContent:
     post = _load("panel.md")
     return _validate(PanelContent, "panel.md", dict(post.metadata))
-
-
-def load_pages() -> PagesContent | None:
-    """`pages.md`, or None when the file is absent (the model is then not told the page)."""
-    if not (CONTENT_DIR / "pages.md").is_file():
-        return None
-    post = _load("pages.md")
-    return _validate(PagesContent, "pages.md", dict(post.metadata))
-
-
-def page_note(pages: PagesContent | None, path: str | None) -> str | None:
-    """The note telling the model which page the visitor is on, or None for an unlisted page.
-
-    `path` comes from the browser, so it is only ever used to look up text written in
-    `pages.md` or a published post's title; it is never put in front of the model itself.
-    """
-    if pages is None or not path:
-        return None
-    key = path.rstrip("/") or "/"
-    described = pages.pages.get(key)
-    if described is None and pages.post and key.startswith("/blog/"):
-        slug = key.removeprefix("/blog/")
-        post = next((post for post in get_all_posts() if post.slug == slug), None)
-        if post is not None:
-            described = pages.post.replace("{title}", post.title).replace("{path}", key)
-    if described is None:
-        return None
-    return pages.note.replace("{page}", described)
 
 
 def _projects_section() -> str:

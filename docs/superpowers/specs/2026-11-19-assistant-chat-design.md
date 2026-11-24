@@ -191,16 +191,14 @@ Agent(
   The domain text is collapsed to one line when loaded, since the judge's scores shift when its
   line breaks move.
   *Later the same day:* the threshold went to `0.25`, the highest value that blocks no genuine
-  test question under any page note (many plain yes/no questions score 0.47 to 0.5, so 0.45 and
-  up blocks real visitors). The judge also reads the page note from `pages.md`, and rewording
-  the home page's description once dropped a genuine question from 0.95 to 0.12, so a changed
-  description needs the labelled messages re-run.
+  test question (many plain yes/no questions score 0.47 to 0.5, so 0.45 and up blocks real
+  visitors).
 - **Added 2026-11-24** *(after the first release of the design)*:
   - *Links:* answers stay plain text; the panel turns web addresses, email addresses and
     `/blog`, `/projects` paths in them into links, building hrefs only from those patterns.
-  - *Page awareness:* logpose has no per-run system text, so a note written in `pages.md` is
-    sent as a text block in front of the visitor's message. The browser's path only selects the
-    note; it is never shown to the model. History returns the visitor's own block only.
+  - *Page awareness* was built (a note from `pages.md` in front of each message) and removed the
+    same day: Akshay did not want the model told which page the visitor is on. The page is still
+    recorded in each trace for reviewing chats.
   - *Contact hand-off:* a reply that gives the email address gets a button that opens a draft
     quoting the visitor's question (copy in `panel.md`). It copies the address first, because a
     mail link does nothing useful for a visitor with no mail app set up.

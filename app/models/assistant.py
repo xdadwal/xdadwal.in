@@ -50,21 +50,6 @@ class ContextContent(BaseModel):
     sources: list[NonEmptyStr] = Field(min_length=1)
 
 
-class PagesContent(BaseModel):
-    """`pages.md`: how the model is told which page the visitor is on."""
-
-    note: NonEmptyStr
-    pages: dict[str, NonEmptyStr] = {}
-    post: NonEmptyStr | None = None
-
-    @field_validator("note")
-    @classmethod
-    def _note_names_the_page(cls, value: str) -> str:
-        if "{page}" not in value:
-            raise ValueError("must contain {page}")
-        return value
-
-
 class ChatRequest(BaseModel):
     # 8000 is a transport cap; the content-defined limit in guardrails.md is enforced by the guard.
     message: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=8000)]

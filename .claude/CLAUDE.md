@@ -172,7 +172,7 @@ ruff-format. Pre-commit runs both on every commit.
 - Optional frontmatter: `published` (bool, default `false`) — posts are hidden by default. Set to `true` to make them visible in the archive and via their direct URL. Flip back to `false` (or omit) to unpublish without deleting.
 - Slug derived from filename — lowercase, hyphenated, no special characters
 - Assistant copy lives only in `app/content/assistant/*.md` (`context.md` lists what the model is
-  given; `guardrails.md`, `pages.md` and `panel.md` hold guard replies, page notes and panel text) — never in Python or
+  given; `guardrails.md` and `panel.md` hold guard replies and panel text) — never in Python or
   templates. Operational settings (model, limits, retention) stay in `app/config.py` / `.env`.
 
 ## Skill Workflow

@@ -16,7 +16,6 @@ from app.services.assistant import (
     reply_events,
     visitor_hash,
 )
-from app.services.assistant_content import page_note
 from app.services.rate_limit import RateLimiter
 
 router = APIRouter(prefix="/api/chat")
@@ -69,9 +68,6 @@ async def chat(
     request: Request, body: ChatRequest, runtime: Runtime, settings: AppSettings
 ) -> StreamingResponse:
     _enforce_limit(runtime.limiter, request)
-    # Worked out before the session is leased: it reads content files, and an error after the
-    # lease is taken would leave the visitor's session locked until the lease lapses.
-    note = page_note(runtime.pages, body.page)
 
     existing = _session_id(request)
     session_id = existing or new_session_id()
@@ -81,7 +77,7 @@ async def chat(
         raise HTTPException(status_code=409, detail="Another reply is still in progress") from None
 
     response = StreamingResponse(
-        reply_events(runtime.agent, turn, body.message, body.page, note),
+        reply_events(runtime.agent, turn, body.message, body.page),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
         # Covers a body that stops being iterated (the client left before or during streaming).

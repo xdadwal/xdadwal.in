@@ -18,7 +18,6 @@ restart the site; no code changes are needed.
 | `instructions.md` | Voice, scope, topics it declines |
 | `resume.md`, `knowledge/*.md` | The facts it answers from |
 | `guardrails.md` | Message length cap, topic check wording and thresholds, replies to blocked messages |
-| `pages.md` | What the model is told about the page the visitor is on |
 | `panel.md` | Greeting, placeholder, starter questions, contact button and credit line for the ask bar and chat panel |
 
 `python -m scripts.show_context` prints the size of each source the model receives

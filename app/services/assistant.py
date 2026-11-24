@@ -15,22 +15,17 @@ from datetime import timedelta
 import httpx
 from logpose import (
     Agent,
-    GuardrailInput,
-    GuardrailVerdict,
-    InputGuardrail,
     LogposeError,
-    Message,
     RunEnd,
     SessionHandle,
-    TextBlock,
     TextDelta,
     openai_decision_guard,
     pattern_guard,
 )
 
 from app.config import Settings
-from app.models.assistant import HistoryMessage, PagesContent
-from app.services.assistant_content import build_system_prompt, load_guardrails, load_pages
+from app.models.assistant import HistoryMessage
+from app.services.assistant_content import build_system_prompt, load_guardrails
 from app.services.feedback import FeedbackStore
 from app.services.rate_limit import RateLimiter
 
@@ -49,7 +44,6 @@ class AssistantRuntime:
     agent: Agent
     limiter: RateLimiter
     http_client: httpx.AsyncClient
-    pages: PagesContent | None
     feedback: FeedbackStore
     # Ratings get their own allowance so that rating answers never uses up a visitor's messages.
     feedback_limiter: RateLimiter
@@ -64,7 +58,7 @@ def build_runtime(settings: Settings) -> AssistantRuntime:
     guardrails = load_guardrails()
     http_client = httpx.AsyncClient()
 
-    guards = [_length_guard(guardrails.max_chars, guardrails.replies.too_long)]
+    guards = [pattern_guard(max_chars=guardrails.max_chars, reply=guardrails.replies.too_long)]
     if guardrails.block_patterns:
         guards.append(
             pattern_guard(
@@ -111,23 +105,9 @@ def build_runtime(settings: Settings) -> AssistantRuntime:
         agent=agent,
         limiter=_limiter(settings),
         http_client=http_client,
-        pages=load_pages(),
         feedback=FeedbackStore(settings.assistant_feedback_db_path),
         feedback_limiter=_limiter(settings),
     )
-
-
-def _length_guard(max_chars: int, reply: str) -> InputGuardrail:
-    """Cap the length of what the visitor typed. The page note in front of it does not count,
-    so the same question is never too long on one page and fine on another."""
-
-    def length_guard(inp: GuardrailInput) -> GuardrailVerdict:
-        if len(_shown_text(inp.message)) > max_chars:
-            return GuardrailVerdict.block("too_long", reply, reason=f"over {max_chars} chars")
-        return GuardrailVerdict.allow()
-
-    length_guard.name = "length_guard"  # type: ignore[attr-defined]
-    return length_guard
 
 
 def _limiter(settings: Settings) -> RateLimiter:
@@ -224,26 +204,18 @@ def _sse(event: str, data: dict[str, object]) -> str:
 
 
 async def reply_events(
-    agent: Agent, turn: ChatTurn, message: str, page: str | None, note: str | None
+    agent: Agent, turn: ChatTurn, message: str, page: str | None
 ) -> AsyncIterator[str]:
-    """Stream one reply as SSE frames, then save and release the session.
-
-    `note` (see `page_note`) goes in front of the question as a block of its own, so the model
-    reads it with the message while the visitor's history shows only what they typed.
-    """
+    """Stream one reply as SSE frames, then save and release the session."""
     # A hash, so OpenAI can attribute abuse to one visitor without receiving the session ID.
     extra = {"safety_identifier": visitor_hash(turn.handle.id)}
+    # Recorded in the trace for reviewing chats; the model is not told the page.
     metadata = {"page": page} if page else None
     # Our own ID for the run, sent to the browser so a rating can be matched to this answer.
     run_id = _new_run_id()
-    prompt: str | Message = message
-    if note:
-        prompt = Message(
-            role="user", content=[TextBlock(text=f"{note}\n\n"), TextBlock(text=message)]
-        )
     try:
         turn.stream = agent.stream(
-            prompt, session=turn.handle, extra=extra, metadata=metadata, run_id=run_id
+            message, session=turn.handle, extra=extra, metadata=metadata, run_id=run_id
         )
         # aclosing ends the run before the session is saved, also when the client disconnects.
         async with aclosing(turn.stream) as events:
@@ -267,17 +239,8 @@ async def reply_events(
 
 async def load_history(agent: Agent, session_id: str) -> list[HistoryMessage]:
     messages = await agent.load_session(session_id)
-    history = [
-        HistoryMessage(role=message.role, text=_shown_text(message))
+    return [
+        HistoryMessage(role=message.role, text=message.text)
         for message in messages
-        if message.role in ("user", "assistant")
+        if message.role in ("user", "assistant") and message.text
     ]
-    return [item for item in history if item.text]
-
-
-def _shown_text(message: Message) -> str:
-    """What the visitor saw: their own words without the page note, or the whole answer."""
-    if message.role == "user":
-        blocks = [block.text for block in message.content if isinstance(block, TextBlock)]
-        return blocks[-1] if blocks else ""
-    return message.text
