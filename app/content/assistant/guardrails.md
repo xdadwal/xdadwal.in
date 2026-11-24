@@ -2,10 +2,12 @@
 # Checks that run on every visitor message before the assistant answers.
 max_chars: 2000        # longer messages get the too_long reply
 # The topic check scores each message from 0 (off topic) to 1 (on topic) using only the text
-# below this block; it never sees the resume. Genuine questions score 0.3 and up, clearly
-# unrelated ones mostly under 0.2. Keep the threshold low: a wrongly blocked visitor is worse
-# than an off-topic message reaching the model, which instructions.md tells it to decline.
-on_topic_min: 0.2      # below this "on topic" score, the off_topic reply is sent; 0 = never
+# below this block; it never sees the resume. Genuine questions score 0.28 and up, and many plain
+# yes/no ones ("Does he know Java?") sit at 0.47 to 0.5, so 0.45 and above blocks real visitors.
+# Clearly unrelated messages mostly score under 0.25. Keep the threshold low: a wrongly blocked
+# visitor is worse than an off-topic message reaching the model, which instructions.md tells it
+# to decline.
+on_topic_min: 0.25     # below this "on topic" score, the off_topic reply is sent; 0 = never
 unsafe_max: 0.5        # above this "unsafe" score, the unsafe reply is sent
 block_patterns: []     # optional regexes; a match gets the blocked_pattern reply
 replies:

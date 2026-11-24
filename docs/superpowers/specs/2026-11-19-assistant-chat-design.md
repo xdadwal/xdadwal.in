@@ -87,7 +87,7 @@ app/content/assistant/
   resume.md          # resume as markdown, converted once from the PDF     → system prompt
   knowledge/*.md     # extra facts: location, contact preference, FAQs     → system prompt
   context.md         # frontmatter `sources`: the ordered list of what the model is given —
-                     # file paths/globs in this folder, or site:experience | site:projects | site:blog
+                     # file paths/globs in this folder, or site:projects | site:blog
   guardrails.md      # frontmatter: max_chars, thresholds, block replies, block_patterns;
                      # body: the topic description the decision guard judges against
   panel.md           # frontmatter: greeting, placeholder, starters
@@ -112,11 +112,19 @@ Built **once per process**, in the order `context.md` lists ("keep it flexible t
  for the model" — Akshay, 2026-11-23), so OpenAI's automatic prompt caching hits. Removing, adding
 or reordering a line in `context.md` changes the prompt with no code change;
 `python -m scripts.show_context` prints each source's size. Default order:
-`instructions.md` → `resume.md` → `knowledge/*.md` (sorted by filename) → `EXPERIENCE` and
-`PROJECTS` from `app/data.py` rendered as compact markdown → published blog posts as
+`instructions.md` → `resume.md` → `knowledge/*.md` (sorted by filename) → `PROJECTS` from
+`app/data.py` rendered as compact markdown → published blog posts as
 `title — description — /blog/<slug>` lines (from `get_all_posts()`). Each section gets a heading.
 Missing `instructions.md` is a startup error; missing optional files are skipped. Editing content
 requires a restart.
+
+> **Changed 2026-11-24:** the role summaries that were `EXPERIENCE` in `app/data.py` now live in
+> `knowledge/experience.md`. No page displayed the list, so it was assistant content kept in Python.
+>
+> The notes on logpose and on this site were removed as out of scope (Akshay, 2026-11-24). The
+> assistant now says only that it is an AI assistant Akshay built, names logpose as one of his
+> projects, and says it has no details on how the site was built, which model it uses or what
+> happens to chats. `knowledge/about.md` gained facts worked out in advance from the resume.
 
 Guardrail rules in `instructions.md` (seeded by the builder): answer only from the provided
 material, say "I don't know — ask Akshay directly" otherwise, stay on topic, plain text replies,
@@ -182,6 +190,11 @@ Agent(
   messages blocked. `instructions.md` carries the same off-topic rule for whatever gets through.
   The domain text is collapsed to one line when loaded, since the judge's scores shift when its
   line breaks move.
+  *Later the same day:* the threshold went to `0.25`, the highest value that blocks no genuine
+  test question under any page note (many plain yes/no questions score 0.47 to 0.5, so 0.45 and
+  up blocks real visitors). The judge also reads the page note from `pages.md`, and rewording
+  the home page's description once dropped a genuine question from 0.95 to 0.12, so a changed
+  description needs the labelled messages re-run.
 - **Added 2026-11-24** *(after the first release of the design)*:
   - *Links:* answers stay plain text; the panel turns web addresses, email addresses and
     `/blog`, `/projects` paths in them into links, building hrefs only from those patterns.
@@ -313,4 +326,4 @@ expand control; no storage notice or contact link in the panel.)*
 - Exact copy of seeded `instructions.md`, greeting, starter questions, guard domain and replies.
 - Exact Tailwind classes/spacing within the token rules; icon choices (Material Symbols).
 - Internal structure of the rate limiter, SSE helper and cleanup task.
-- How `EXPERIENCE`/`PROJECTS` are rendered to markdown.
+- How `PROJECTS` is rendered to markdown.

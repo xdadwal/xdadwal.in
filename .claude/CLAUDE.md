@@ -7,7 +7,7 @@
 
 ## Project
 
-Personal website for xdadwal.in — home page (experience, projects) and a blog.
+Personal website for xdadwal.in — home page, projects page and a blog.
 
 **Stack:** FastAPI · Jinja2 templates · Alpine.js · Tailwind CSS (CLI via `pytailwindcss`, not CDN
 in production). Python 3.12+. Dark-mode only.
@@ -45,7 +45,7 @@ app/
   main.py              # FastAPI app instance, router registration, static mount
   config.py            # pydantic-settings config (env vars, loaded via get_settings())
   templates.py         # Jinja2Templates instance + custom filters
-  data.py              # EXPERIENCE, PROJECTS content
+  data.py              # PROJECTS content
   routes/
     home.py            # GET /
     projects.py        # GET /projects
@@ -127,7 +127,7 @@ ruff-format. Pre-commit runs both on every commit.
 **Naming**
 - `snake_case` for functions, variables, modules, and packages
 - `PascalCase` for classes (including Pydantic models, enums, exceptions)
-- `UPPER_SNAKE_CASE` for module-level constants (`EXPERIENCE`, `POSTS_DIR`)
+- `UPPER_SNAKE_CASE` for module-level constants (`PROJECTS`, `POSTS_DIR`)
 - `_leading_underscore` for module-private helpers; never shadow builtins (`list`, `dict`, `id`, `type`)
 
 **Imports** (`I` — isort)

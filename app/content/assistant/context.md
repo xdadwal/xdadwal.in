@@ -3,7 +3,6 @@
 # remove a line to drop a source, reorder lines to change priority, add a line to include more.
 #
 #   - a path or glob relative to this folder (matching files are added in filename order)
-#   - site:experience   the EXPERIENCE list in app/data.py
 #   - site:projects     the PROJECTS list in app/data.py
 #   - site:blog         titles, descriptions and links of published blog posts
 #
@@ -13,7 +12,6 @@ sources:
   - instructions.md
   - resume.md
   - knowledge/*.md
-  - site:experience
   - site:projects
   - site:blog
 ---

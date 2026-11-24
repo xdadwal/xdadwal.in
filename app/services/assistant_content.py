@@ -6,7 +6,7 @@ import frontmatter
 import yaml
 from pydantic import BaseModel, ValidationError
 
-from app.data import EXPERIENCE, PROJECTS
+from app.data import PROJECTS
 from app.models.assistant import ContextContent, GuardrailContent, PagesContent, PanelContent
 from app.services.blog import get_all_posts
 
@@ -82,17 +82,6 @@ def page_note(pages: PagesContent | None, path: str | None) -> str | None:
     return pages.note.replace("{page}", described)
 
 
-def _experience_section() -> str:
-    lines: list[str] = []
-    for company in EXPERIENCE:
-        lines.append(f"## {company['company']} ({company['period']})")
-        for role in company["roles"]:
-            lines.append(f"- {role['title']} ({role['period']}): {role['description']}")
-            if role.get("tags"):
-                lines.append(f"  Technologies: {', '.join(role['tags'])}")
-    return "\n".join(lines)
-
-
 def _projects_section() -> str:
     lines: list[str] = []
     for project in PROJECTS:
@@ -111,7 +100,6 @@ def _blog_section() -> str:
 
 
 _SITE_SOURCES = {
-    "experience": ("Experience (from the site)", _experience_section),
     "projects": ("Projects (from the site)", _projects_section),
     "blog": ("Blog posts", _blog_section),
 }
