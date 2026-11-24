@@ -22,6 +22,7 @@ from logpose import (
     openai_decision_guard,
     pattern_guard,
 )
+from logpose.providers.openai_compat import DEFAULT_HTTP_TIMEOUT
 
 from app.config import Settings
 from app.models.assistant import HistoryMessage
@@ -35,6 +36,10 @@ _SESSION_ID_RE = re.compile(r"[A-Za-z0-9_-]{43}")
 _CLEANUP_INTERVAL_SECONDS = 24 * 60 * 60
 
 # Transport-level failures only; everything the assistant "says" comes from the .md content files.
+# Sent with every model call so OpenAI routes this site's requests to servers that already hold
+# the shared system prompt in their cache.
+_PROMPT_CACHE_KEY = "xdadwal-assistant"
+
 _CUT_SHORT = "That answer was cut short. Try asking something more specific."
 _FAILED = "Something went wrong on my side. Please try again."
 
@@ -78,11 +83,12 @@ def build_runtime(settings: Settings) -> AssistantRuntime:
             unsafe_max=guardrails.unsafe_max,
             # A guard outage must not take the chat down; instructions and rate limits still apply.
             on_error="allow",
+            timeout=settings.assistant_guard_timeout_seconds,
             client=http_client,
         )
     )
 
-    extra = {}
+    extra = {"prompt_cache_key": _PROMPT_CACHE_KEY}
     if settings.assistant_reasoning_effort is not None:
         extra["reasoning_effort"] = settings.assistant_reasoning_effort
 
@@ -100,6 +106,14 @@ def build_runtime(settings: Settings) -> AssistantRuntime:
         context_budget=settings.assistant_context_budget,
         input_guardrails=guards,
         guardrail_mode="parallel",
+        # Forwarded to the provider: a short connect timeout, so a hung connection is retried
+        # quickly instead of after logpose's default 5 seconds.
+        timeout=httpx.Timeout(
+            connect=settings.assistant_connect_timeout_seconds,
+            read=DEFAULT_HTTP_TIMEOUT.read,
+            write=DEFAULT_HTTP_TIMEOUT.write,
+            pool=DEFAULT_HTTP_TIMEOUT.pool,
+        ),
     )
     return AssistantRuntime(
         agent=agent,

@@ -30,15 +30,20 @@ class Settings(BaseSettings):
     # Assistant behaviour. Credentials, endpoint, database path and tracing are logpose's
     # (LOGPOSE_* variables); logpose has no variable for the settings below.
     assistant_model: str = "gpt-6-luna"
-    assistant_reasoning_effort: str | None = "low"
-    assistant_max_output_tokens: int = 2000
+    # "none" turns reasoning off: answers are short lookups, and tests showed no accuracy gain.
+    assistant_reasoning_effort: str | None = "none"
+    assistant_max_output_tokens: int = 800
     # The model's context window, and how much of it one request may use before older turns are
     # summarized. Change the window whenever the model changes.
     assistant_context_window: int = 1_050_000
-    assistant_context_budget: int = 16_000
+    assistant_context_budget: int = 8_000
     # Wall-clock limits for a whole reply and for one model call within it.
-    assistant_run_timeout_seconds: float = 60
-    assistant_turn_timeout_seconds: float = 45
+    assistant_run_timeout_seconds: float = 30
+    assistant_turn_timeout_seconds: float = 20
+    # Seconds to open a connection to the model's API, and for the whole topic check. A check
+    # that times out lets the message through; the reply waits for the check before it shows.
+    assistant_connect_timeout_seconds: float = Field(default=2, gt=0)
+    assistant_guard_timeout_seconds: float = Field(default=2.5, gt=0)
     assistant_retention_days: int = 30
     # SQLite file holding visitors' thumbs up/down on answers.
     assistant_feedback_db_path: str = "feedback.db"

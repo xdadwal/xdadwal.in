@@ -53,12 +53,14 @@ logpose has no variable for these, so the app reads them:
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `ASSISTANT_MODEL` | `gpt-6-luna` | Model |
-| `ASSISTANT_REASONING_EFFORT` | `low` | Leave empty for models without reasoning |
-| `ASSISTANT_MAX_OUTPUT_TOKENS` | `2000` | Output ceiling per reply, reasoning included |
+| `ASSISTANT_REASONING_EFFORT` | `none` | Reasoning off; leave empty to send nothing |
+| `ASSISTANT_MAX_OUTPUT_TOKENS` | `800` | Output ceiling per reply, reasoning included |
 | `ASSISTANT_CONTEXT_WINDOW` | `1050000` | The model's context window; change it with the model |
-| `ASSISTANT_CONTEXT_BUDGET` | `16000` | Input tokens per request before older turns are summarized |
-| `ASSISTANT_RUN_TIMEOUT_SECONDS` | `60` | Time allowed for a whole reply |
-| `ASSISTANT_TURN_TIMEOUT_SECONDS` | `45` | Time allowed for one model call |
+| `ASSISTANT_CONTEXT_BUDGET` | `8000` | Input tokens per request before older turns are summarized |
+| `ASSISTANT_RUN_TIMEOUT_SECONDS` | `30` | Time allowed for a whole reply |
+| `ASSISTANT_TURN_TIMEOUT_SECONDS` | `20` | Time allowed for one model call |
+| `ASSISTANT_CONNECT_TIMEOUT_SECONDS` | `2` | Time allowed to connect to the model's API before retrying |
+| `ASSISTANT_GUARD_TIMEOUT_SECONDS` | `2.5` | Time allowed for the topic check; on timeout the message is let through |
 | `ASSISTANT_RETENTION_DAYS` | `30` | How long chats, ratings and the visitor cookie are kept |
 | `ASSISTANT_FEEDBACK_DB_PATH` | `feedback.db` | Ratings database; the systemd unit sets `/var/lib/portfolio/feedback.db` |
 | `ASSISTANT_RATE_LIMIT_PER_IP` | `20` | Messages per visitor per 10 minutes; `0` = no limit |
