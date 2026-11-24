@@ -11,10 +11,10 @@ PROJECTS: list[dict] = [
     {
         "title": "ohara",
         "description": (
-            "My homeserver setup: Docker Compose services behind Nginx and Certbot, "
+            "My home server setup: Docker Compose services behind nginx and Certbot, "
             "hosting this site, a media stack and a private dashboard."
         ),
-        "tags": ["Docker Compose", "Nginx", "Linux", "Self-hosting"],
+        "tags": ["docker-compose", "nginx", "Linux", "self-hosted"],
         "url": "https://github.com/xdadwal/ohara",
     },
     {
@@ -29,7 +29,7 @@ PROJECTS: list[dict] = [
     {
         "title": "dex-cli",
         "description": "A CLI tool to download manga from various platforms.",
-        "tags": ["Python", "CLI", "multi-threading"],
+        "tags": ["Python", "CLI", "multithreading"],
         "url": "https://github.com/xdadwal/dex-cli",
     },
 ]

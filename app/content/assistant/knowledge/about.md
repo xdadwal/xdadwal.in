@@ -37,7 +37,7 @@ Facts worked out in advance from his resume, and details the resume leaves out.
 
 - Detect Technologies (https://detectinspections.com), Software Development Engineer III: takes
   care of infrastructure, automations, observability, platform reliability and AI tooling. Uses
-  GCP, Kubernetes (K8S) and Datadog.
+  GCP, Kubernetes (K8s) and Datadog.
 - Attentive.ai (https://attentive.ai), Software Engineer III: the PDF search service used FastAPI
   and Elasticsearch.
 - Attentive.ai, Software Engineer II: led a team of 8 devs building SaaS products; he says it was
