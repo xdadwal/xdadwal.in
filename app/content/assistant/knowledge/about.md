@@ -1,6 +1,6 @@
 # About Akshay
 
-Facts worked out in advance from his resume and role notes, so they need no recalculating.
+Facts worked out in advance from his resume, and details the resume leaves out.
 
 ## Location and contact
 
@@ -12,49 +12,37 @@ Facts worked out in advance from his resume and role notes, so they need no reca
 
 ## Career at a glance
 
-- He started working as a software engineer in August 2018, the year he finished his B.Tech.
-- Three companies, five roles, in this order: Renewbuy.com, Attentive.ai, Detect Technologies
-  (current).
+- He started as a software engineer in August 2018, the year he finished his B.Tech.
+- Three companies, five roles, in order: Renewbuy.com, Attentive.ai, Detect Technologies (current).
 - Time at each company: Renewbuy.com about 3 years 5 months (August 2018 to January 2022, his
   longest), Attentive.ai about 3 years 2 months (January 2022 to March 2025), Detect Technologies
   since May 2025.
-- Time in each role: Software Engineer at Renewbuy.com about 2 years 8 months; Senior Software
-  Engineer there about 9 months; Software Engineer II at Attentive.ai about 3 years; Software
-  Engineer III there about 3 months; Software Development Engineer III at Detect Technologies
-  since May 2025.
+- Time in each role: Software Engineer at Renewbuy.com about 2 years 8 months, then Senior
+  Software Engineer about 9 months; Software Engineer II at Attentive.ai about 3 years, then
+  Software Engineer III about 3 months.
 - Promoted twice: to Senior Software Engineer at Renewbuy.com (April 2021) and to Software
   Engineer III at Attentive.ai (January 2025).
-- Industries: insurance (Renewbuy.com); software for US landscaping companies and property
-  measurement from aerial images (Attentive.ai); powerline inspection for Canadian utilities
-  (Detect Technologies).
-- Three awards: Rockstar Rookie at Renewbuy.com (April 2019, about 8 months after he joined), and
-  Innovation (December 2022) and Tech Trendsetter (November 2024) at Attentive.ai.
-- Leading people: he led a team of 8 developers at Attentive.ai, where he also ran sprints, code
-  reviews and stakeholder work. He has mentored Python learners on Exercism since 2023.
+- Industries: insurance, software for US landscaping companies and property measurement, and
+  powerline inspection for Canadian utilities.
+- Three awards: Rockstar Rookie (Renewbuy.com, April 2019, about 8 months after he joined),
+  Innovation (Attentive.ai, December 2022) and Tech Trendsetter (Attentive.ai, November 2024).
+- Leading people: he led a team of 8 developers at Attentive.ai. He has mentored Python learners
+  on Exercism since 2023.
 - Two projects of his own: dex-cli, and logpose, an open-source Python library for building
   applications on language models (https://github.com/xdadwal/logpose).
+- Recurring themes: performance and observability, services designed from scratch, data and
+  event pipelines, and security and access control.
 
-## Where he used what
+## Each role in his own words, with technologies the resume does not name
 
-- Languages: Python at Renewbuy.com and Attentive.ai and in his own projects, since 2018;
-  JavaScript (Node.js, Express.js) at Attentive.ai.
-- Frameworks: Django at Renewbuy.com and Attentive.ai; FastAPI at Renewbuy.com (OTP service) and at
-  Attentive.ai (PDF search service).
-- Databases and search: MySQL at Renewbuy.com; PostgreSQL, MongoDB, Redis and Elasticsearch at
-  Attentive.ai; AWS Redshift as a data warehouse at Renewbuy.com.
-- Queues and events: Kafka with Debezium, and AWS SQS, at Renewbuy.com; Celery and GCP Pub/Sub at
-  Attentive.ai.
-- Cloud: AWS at Renewbuy.com (EC2, RDS, SQS, Redshift, Lambda); GCP at Attentive.ai (Pub/Sub,
-  Cloud Functions) and at Detect Technologies, where he also works with Kubernetes.
-- Monitoring: Datadog at Renewbuy.com and Detect Technologies; New Relic at Attentive.ai.
-
-## Recurring themes in his work
-
-- Performance and observability: after setting up monitoring he cut latency by about 30% overall
-  at Renewbuy.com and by about 20 to 40% on several APIs at Attentive.ai.
-- Designing services from scratch: an OTP service, a payment gateway aggregator (about 15% fewer
-  drop-offs), a user management and access-control service, and a PDF search service.
-- Data and event pipelines: Debezium and Kafka into Redshift at Renewbuy.com; Pub/Sub event
-  processing at Attentive.ai.
-- Security and access control: a security audit of infrastructure and applications at
-  Renewbuy.com; role- and attribute-based access control at Attentive.ai.
+- Detect Technologies (https://detectinspections.com), Software Development Engineer III: takes
+  care of infrastructure, automations, observability, platform reliability and AI tooling. Uses
+  GCP, Kubernetes (K8S) and Datadog.
+- Attentive.ai (https://attentive.ai), Software Engineer III: the PDF search service used FastAPI
+  and Elasticsearch.
+- Attentive.ai, Software Engineer II: led a team of 8 devs building SaaS products; he says it was
+  super fun.
+- Renewbuy.com (https://renewbuy.com), Senior Software Engineer: mainly platform reliability and
+  experimental work. The data ingestion pipeline was an ETL pipeline.
+- Renewbuy.com, Software Engineer: "a hyped-up kid" who worked on anything he was asked to. Used
+  Python, Django, MySQL and bash scripts.
