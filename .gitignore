@@ -17,6 +17,9 @@ static/css/output.css
 logpose.db*
 feedback.db*
 
+# Design specs and plans: kept locally, not in the repo
+docs/
+
 # Empty assets dir
 static/assets/
 
