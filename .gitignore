@@ -15,6 +15,7 @@ static/css/output.css
 
 # Assistant chat database (logpose sessions and traces)
 logpose.db*
+feedback.db*
 
 # Empty assets dir
 static/assets/

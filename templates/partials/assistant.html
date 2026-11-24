@@ -3,7 +3,9 @@
 {% if assistant_panel %}
 {# `contents` keeps this wrapper out of the page layout, so the bar below is a direct flex child
    of <body> and can stick to the bottom of the screen until the footer scrolls into view. #}
-<div x-data="assistant()" @keydown.window="onKey($event)" class="contents">
+<div x-data="assistant()" @keydown.window="onKey($event)" class="contents"
+     data-contact-subject="{{ assistant_panel.contact_subject }}"
+     data-contact-body="{{ assistant_panel.contact_body }}">
 
   <!-- Ask bar: floats at the bottom of the screen while scrolling, and rests just above the
        footer at the end of the page. Kept in the layout (invisible) while the panel is open so
@@ -88,16 +90,85 @@
           <!-- Assistant -->
           <template x-if="message.role === 'assistant'">
             <div class="flex flex-col items-start gap-2">
-              <p x-show="message.text" x-text="message.text"
-                 class="font-body-md text-body-md text-on-surface-variant whitespace-pre-wrap break-words"></p>
+              {# The answer is plain text; web addresses, email addresses and site paths in it are
+                 shown as links. The paragraph preserves whitespace, so the tags inside it are
+                 joined with whitespace-trimming comments rather than line breaks. #}
+              <p x-show="message.text"
+                 class="font-body-md text-body-md text-on-surface-variant whitespace-pre-wrap break-words">
+                {#- -#}
+                <template x-for="(part, at) in segments(message.text)" :key="at">
+                  {#- -#}
+                  <span>
+                    {#- -#}
+                    <template x-if="part.href">
+                      {#- -#}
+                      <a :href="part.href" x-text="part.text"
+                         :target="part.external ? '_blank' : null"
+                         :rel="part.external ? 'noopener noreferrer' : null"
+                         class="text-primary underline underline-offset-4 decoration-outline hover:decoration-primary transition-colors duration-200"></a>
+                      {#- -#}
+                    </template>
+                    {#- -#}
+                    <template x-if="!part.href">
+                      {#- -#}
+                      <span x-text="part.text"></span>
+                      {#- -#}
+                    </template>
+                    {#- -#}
+                  </span>
+                  {#- -#}
+                </template>
+                {#- -#}
+              </p>
               <p x-show="!message.text && streaming && index === messages.length - 1"
                  class="font-label-caps text-label-caps text-outline uppercase animate-pulse">Thinking</p>
-              <button type="button" x-show="message.text && !(streaming && index === messages.length - 1)"
-                      @click="copy(message.text, index)"
-                      class="p-1 rounded-none text-outline hover:text-primary transition-colors duration-200"
-                      aria-label="Copy answer">
-                <span class="material-symbols-outlined" x-text="copied === index ? 'check' : 'content_copy'">content_copy</span>
-              </button>
+
+              <!-- Shown once the answer has finished -->
+              <div x-show="message.text && !(streaming && index === messages.length - 1)"
+                   class="flex flex-col items-start gap-2">
+                {% if assistant_panel.contact_label %}
+                <template x-if="contactHref(index)">
+                  <a :href="contactHref(index)" @click.prevent="contact(index)"
+                     class="flex items-center gap-2 px-3 py-2 rounded-none border border-outline-variant font-label-caps text-label-caps text-on-surface uppercase hover:bg-surface-container-high transition-colors duration-200">
+                    <span class="material-symbols-outlined" aria-hidden="true"
+                          x-text="contacted === index ? 'check' : 'mail'">mail</span>
+                    {% if assistant_panel.contact_copied %}
+                    <span x-show="contacted !== index">{{ assistant_panel.contact_label }}</span>
+                    <span x-show="contacted === index" aria-live="polite">{{ assistant_panel.contact_copied }}</span>
+                    {% else %}
+                    {{ assistant_panel.contact_label }}
+                    {% endif %}
+                  </a>
+                </template>
+                {% endif %}
+                <div class="flex items-center gap-1">
+                  <button type="button" @click="copy(message.text, index)"
+                          class="p-1 rounded-none text-outline hover:text-primary transition-colors duration-200"
+                          aria-label="Copy answer">
+                    <span class="material-symbols-outlined" x-text="copied === index ? 'check' : 'content_copy'">content_copy</span>
+                  </button>
+                  <!-- Only answers given since the page loaded can be rated: earlier ones come
+                       back from history without the ID a rating is filed under. -->
+                  <template x-if="message.id">
+                    <div class="flex items-center gap-1">
+                      <button type="button" @click="rate(message, 'up')"
+                              :aria-pressed="message.rating === 'up'"
+                              :class="message.rating === 'up' ? 'text-primary' : 'text-outline'"
+                              class="p-1 rounded-none hover:text-primary transition-colors duration-200"
+                              aria-label="Good answer">
+                        <span class="material-symbols-outlined">thumb_up</span>
+                      </button>
+                      <button type="button" @click="rate(message, 'down')"
+                              :aria-pressed="message.rating === 'down'"
+                              :class="message.rating === 'down' ? 'text-primary' : 'text-outline'"
+                              class="p-1 rounded-none hover:text-primary transition-colors duration-200"
+                              aria-label="Bad answer">
+                        <span class="material-symbols-outlined">thumb_down</span>
+                      </button>
+                    </div>
+                  </template>
+                </div>
+              </div>
             </div>
           </template>
 
@@ -128,6 +199,16 @@
           <span class="material-symbols-outlined">stop</span>
         </button>
       </form>
+      {% if assistant_panel.credit %}
+      <p class="mt-3 text-center font-label-caps text-label-caps text-outline uppercase">
+        {% if assistant_panel.credit_url %}
+        <a href="{{ assistant_panel.credit_url }}" target="_blank" rel="noopener noreferrer"
+           class="hover:text-primary transition-colors duration-200">{{ assistant_panel.credit }}</a>
+        {% else %}
+        <span>{{ assistant_panel.credit }}</span>
+        {% endif %}
+      </p>
+      {% endif %}
     </div>
   </aside>
 </div>
@@ -137,6 +218,9 @@
   function assistant() {
     const TRY_AGAIN = "Couldn't reach the assistant. Check your connection and try again.";
     const NO_ANSWER = 'No answer came back. Try rephrasing your question.';
+    // What gets linked in an answer: web addresses, email addresses, and paths on this site.
+    const LINKS = /https?:\/\/[^\s<>"']+|[A-Za-z0-9._+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+|\/(?:blog|projects)(?:\/[A-Za-z0-9_-]+)*/g;
+    const EMAIL = /[A-Za-z0-9._+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/;
 
     return {
       open: false,
@@ -147,6 +231,7 @@
       streaming: false,
       notice: '',
       copied: null,
+      contacted: null,
       controller: null,
 
       init() {
@@ -203,7 +288,7 @@
           const items = await response.json();
           // Don't overwrite a conversation or new chat the visitor started while history was loading.
           if (!this.loaded) {
-            this.messages = items.map((item) => ({ role: item.role, text: item.text, failed: false }));
+            this.messages = items.map((item) => this.message(item.role, item.text));
             this.scrollDown();
           }
           this.loaded = true;
@@ -217,6 +302,88 @@
 
       ask(text) {
         this.send(text);
+      },
+
+      // `id` arrives when an answer finishes; `rating` is the visitor's thumbs up or down on it.
+      message(role, text) {
+        return { role, text, failed: false, id: null, rating: null };
+      },
+
+      // Split an answer into plain text and links. Hrefs are built only from the three patterns
+      // in LINKS, so nothing the model writes can produce any other kind of link.
+      segments(text) {
+        const parts = [];
+        let from = 0;
+        for (const match of text.matchAll(LINKS)) {
+          let found = match[0];
+          const isPath = found.startsWith('/');
+          // A path counts only at the start of a word, so the "/blog" inside a web address or
+          // "and/or" is left alone.
+          if (isPath && match.index > 0 && !/[\s(]/.test(text[match.index - 1])) continue;
+          // Punctuation that ends the sentence is not part of the address.
+          found = found.replace(/[.,;:!?)\]]+$/, '');
+          if (!found) continue;
+          if (match.index > from) parts.push({ text: text.slice(from, match.index) });
+          const isEmail = !isPath && !/^https?:\/\//.test(found);
+          parts.push({
+            text: found,
+            href: isEmail ? `mailto:${found}` : found,
+            external: !isPath && !isEmail,
+          });
+          from = match.index + found.length;
+        }
+        if (from < text.length) parts.push({ text: text.slice(from) });
+        return parts;
+      },
+
+      // A ready-to-send email to the address an answer gives, quoting the question that led to it.
+      contactHref(index) {
+        const found = this.messages[index].text.match(EMAIL);
+        if (!found) return null;
+        const asked = this.messages[index - 1];
+        const question = asked && asked.role === 'user' ? asked.text : '';
+        const { contactSubject, contactBody } = this.$root.dataset;
+        const fields = [];
+        if (contactSubject) fields.push(`subject=${encodeURIComponent(contactSubject)}`);
+        if (contactBody) {
+          // A function, so that "$" in the question is not read as a replacement pattern.
+          fields.push(`body=${encodeURIComponent(contactBody.replace('{question}', () => question))}`);
+        }
+        return `mailto:${found[0]}${fields.length ? `?${fields.join('&')}` : ''}`;
+      },
+
+      // Copy the address, then open the draft. Plenty of visitors have no mail app set up, and
+      // for them the mail link alone does nothing useful; the copied address still gets them there.
+      async contact(index) {
+        const href = this.contactHref(index);
+        const address = this.messages[index].text.match(EMAIL)[0];
+        try {
+          await navigator.clipboard.writeText(address);
+          this.contacted = index;
+          setTimeout(() => { if (this.contacted === index) this.contacted = null; }, 2500);
+        } catch {
+          // Copying is the extra here: without it the button is still a plain mail link.
+        }
+        window.location.href = href;
+      },
+
+      async rate(message, rating) {
+        if (!message.id || message.rating === rating) return;
+        const before = message.rating;
+        message.rating = rating;
+        try {
+          const response = await fetch('/api/chat/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: message.id, rating }),
+          });
+          if (!response.ok) throw new Error(`rating failed: ${response.status}`);
+        } catch (error) {
+          console.warn('assistant: could not save the rating', error);
+          message.rating = before;
+          // While a reply is streaming, the notice line belongs to that reply's own errors.
+          if (!this.streaming) this.notice = "Couldn't save your rating. Try again.";
+        }
       },
 
       retry(index) {
@@ -234,7 +401,7 @@
         this.notice = '';
         this.loaded = true;
 
-        this.messages.push({ role: 'user', text, failed: false }, { role: 'assistant', text: '', failed: false });
+        this.messages.push(this.message('user', text), this.message('assistant', ''));
         // Read them back through Alpine's reactive proxy so later edits re-render.
         const mine = this.messages[this.messages.length - 2];
         const reply = this.messages[this.messages.length - 1];
@@ -275,6 +442,7 @@
                   this.scrollDown();
                 } else if (frame.event === 'done') {
                   saved = true;
+                  reply.id = frame.data.id || null;
                 } else if (frame.event === 'error') {
                   this.notice = frame.data.message;
                   retryable = frame.data.retry !== false;

@@ -29,7 +29,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     runtime = build_runtime(settings)
     app.state.assistant = runtime
     retention = timedelta(days=settings.assistant_retention_days)
-    cleanup = asyncio.create_task(cleanup_loop(runtime.agent, retention))
+    cleanup = asyncio.create_task(cleanup_loop(runtime, retention))
     try:
         yield
     finally:

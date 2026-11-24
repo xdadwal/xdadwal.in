@@ -1,6 +1,6 @@
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, StringConstraints, field_validator
+from pydantic import BaseModel, Field, HttpUrl, StringConstraints, field_validator
 
 NonEmptyStr = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
@@ -29,6 +29,14 @@ class PanelContent(BaseModel):
     greeting: NonEmptyStr
     placeholder: NonEmptyStr
     starters: list[str] = []
+    credit: NonEmptyStr | None = None
+    credit_url: HttpUrl | None = None
+    # The "email Akshay" button under a reply that gives his address. `{question}` in the body
+    # is replaced with the visitor's question.
+    contact_label: NonEmptyStr | None = None
+    contact_copied: NonEmptyStr | None = None
+    contact_subject: str = ""
+    contact_body: str = ""
 
     @field_validator("starters")
     @classmethod
@@ -42,10 +50,30 @@ class ContextContent(BaseModel):
     sources: list[NonEmptyStr] = Field(min_length=1)
 
 
+class PagesContent(BaseModel):
+    """`pages.md`: how the model is told which page the visitor is on."""
+
+    note: NonEmptyStr
+    pages: dict[str, NonEmptyStr] = {}
+    post: NonEmptyStr | None = None
+
+    @field_validator("note")
+    @classmethod
+    def _note_names_the_page(cls, value: str) -> str:
+        if "{page}" not in value:
+            raise ValueError("must contain {page}")
+        return value
+
+
 class ChatRequest(BaseModel):
     # 8000 is a transport cap; the content-defined limit in guardrails.md is enforced by the guard.
     message: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=8000)]
     page: str | None = Field(default=None, max_length=200)
+
+
+class FeedbackRequest(BaseModel):
+    id: Annotated[str, StringConstraints(pattern=r"^run_[0-9a-f]{32}$")]
+    rating: Literal["up", "down"]
 
 
 class HistoryMessage(BaseModel):

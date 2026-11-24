@@ -18,7 +18,8 @@ restart the site; no code changes are needed.
 | `instructions.md` | Voice, scope, topics it declines |
 | `resume.md`, `knowledge/*.md` | The facts it answers from |
 | `guardrails.md` | Message length cap, topic check wording and thresholds, replies to blocked messages |
-| `panel.md` | Greeting, placeholder and starter questions for the ask bar and chat panel |
+| `pages.md` | What the model is told about the page the visitor is on |
+| `panel.md` | Greeting, placeholder, starter questions, contact button and credit line for the ask bar and chat panel |
 
 `python -m scripts.show_context` prints the size of each source the model receives
 (`--full` prints the whole prompt).
@@ -59,7 +60,8 @@ logpose has no variable for these, so the app reads them:
 | `ASSISTANT_CONTEXT_BUDGET` | `16000` | Input tokens per request before older turns are summarized |
 | `ASSISTANT_RUN_TIMEOUT_SECONDS` | `60` | Time allowed for a whole reply |
 | `ASSISTANT_TURN_TIMEOUT_SECONDS` | `45` | Time allowed for one model call |
-| `ASSISTANT_RETENTION_DAYS` | `30` | How long chats and the visitor cookie are kept |
+| `ASSISTANT_RETENTION_DAYS` | `30` | How long chats, ratings and the visitor cookie are kept |
+| `ASSISTANT_FEEDBACK_DB_PATH` | `feedback.db` | Ratings database; the systemd unit sets `/var/lib/portfolio/feedback.db` |
 | `ASSISTANT_RATE_LIMIT_PER_IP` | `20` | Messages per visitor per 10 minutes; `0` = no limit |
 | `ASSISTANT_RATE_LIMIT_PER_DAY` | `1000` | Messages per day across all visitors; `0` = no limit |
 
@@ -70,10 +72,13 @@ Set a monthly budget on the OpenAI project as a second ceiling on spend.
 `python -m scripts.export_chats chats.jsonl` writes stored conversations as OTLP/JSON, one turn
 per line.
 
+Visitors can rate an answer with a thumbs up or down. `python -m scripts.show_feedback` lists the
+ratings with the question and answer each one is about.
+
 ### Deploying
 
 `deploy/portfolio.service` sets `StateDirectory=portfolio`, which gives the locked-down service a
-writable `/var/lib/portfolio`, and points `LOGPOSE_DB_PATH` at it. After pulling, reinstall the
+writable `/var/lib/portfolio`, and points `LOGPOSE_DB_PATH` and `ASSISTANT_FEEDBACK_DB_PATH` at it. After pulling, reinstall the
 unit, run `sudo systemctl daemon-reload`, add the three required `LOGPOSE_*` variables to the
 server's `.env`, and restart.
 

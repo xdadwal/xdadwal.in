@@ -40,6 +40,8 @@ class Settings(BaseSettings):
     assistant_run_timeout_seconds: float = 60
     assistant_turn_timeout_seconds: float = 45
     assistant_retention_days: int = 30
+    # SQLite file holding visitors' thumbs up/down on answers.
+    assistant_feedback_db_path: str = "feedback.db"
     # Chat messages allowed per visitor per window, and per day across all visitors. 0 = no limit.
     assistant_rate_limit_per_ip: int = Field(default=20, ge=0)
     assistant_rate_limit_window_seconds: int = Field(default=600, ge=1)

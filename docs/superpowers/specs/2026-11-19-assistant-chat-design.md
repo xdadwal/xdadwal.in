@@ -182,6 +182,20 @@ Agent(
   messages blocked. `instructions.md` carries the same off-topic rule for whatever gets through.
   The domain text is collapsed to one line when loaded, since the judge's scores shift when its
   line breaks move.
+- **Added 2026-11-24** *(after the first release of the design)*:
+  - *Links:* answers stay plain text; the panel turns web addresses, email addresses and
+    `/blog`, `/projects` paths in them into links, building hrefs only from those patterns.
+  - *Page awareness:* logpose has no per-run system text, so a note written in `pages.md` is
+    sent as a text block in front of the visitor's message. The browser's path only selects the
+    note; it is never shown to the model. History returns the visitor's own block only.
+  - *Contact hand-off:* a reply that gives the email address gets a button that opens a draft
+    quoting the visitor's question (copy in `panel.md`). It copies the address first, because a
+    mail link does nothing useful for a visitor with no mail app set up.
+  - *Ratings:* each run gets an app-chosen `run_id`, returned in the `done` event;
+    `POST /api/chat/feedback` stores up/down per visitor hash and run ID in its own SQLite file
+    (`ASSISTANT_FEEDBACK_DB_PATH`), purged with the same retention. Answers reloaded from
+    history have no ID and cannot be rated.
+  - *Small print:* the logpose credit under the message box.
 - **Compaction** stays on (logpose default) with a 16k input budget; summaries persist with the
   session. The system prompt counts toward the budget — if the assembled prompt exceeds ~8k tokens,
   raise `context_budget`.
