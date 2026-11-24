@@ -11,7 +11,7 @@ PROJECTS: list[dict] = [
     {
         "title": "ohara",
         "description": (
-            "My home server setup: Docker Compose services behind nginx and Certbot, "
+            "My home server setup: docker-compose services behind nginx and Certbot, "
             "hosting this site, a media stack and a private dashboard."
         ),
         "tags": ["docker-compose", "nginx", "Linux", "self-hosted"],
@@ -20,7 +20,7 @@ PROJECTS: list[dict] = [
     {
         "title": "the-django-boilerplate",
         "description": (
-            "A ready-to-code Django and DRF starter with Docker Compose, pre-commit hooks, "
+            "A ready-to-code Django and DRF starter with docker-compose, pre-commit hooks, "
             "base models and serializers, and environment-based settings."
         ),
         "tags": ["Django", "DRF", "Docker"],
