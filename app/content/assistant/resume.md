@@ -64,7 +64,7 @@ performance dashboard and related services for certified insurance agents.
 
 - Designed and built an OTP generation and verification microservice in FastAPI, to which all
   internal services delegate OTP operations, and published a Python package for integrating with it.
-- Set up monitoring and alerting on several backend services with DataDog and identified
+- Set up monitoring and alerting on several backend services with Datadog and identified
   bottlenecks such as the slowest DB queries and APIs.
 - Identified DB issues and cross-service network calls and wrote a strategy document for
   optimizing those APIs, improving overall latency by ~30%.
@@ -106,7 +106,7 @@ performance dashboard and related services for certified insurance agents.
 ### dex-cli
 
 A command-line Python tool to download and manage manga and comics from various platforms. It
-supports mangadex.org, uses multi-threading for concurrent downloads without blocking on I/O, uses
+supports mangadex.org, uses multithreading for concurrent downloads without blocking on I/O, uses
 the Factory design pattern so more providers can be added, and has unit tests with ~60% coverage.
 Planned: cloud storage integration, and a better pagination strategy for third-party APIs.
 
