@@ -5,15 +5,15 @@ Location: New Delhi, India
 
 ## Profile
 
-A Software Engineer with 7 years of experience building solutions for complex B2B and B2C
+A Software Engineer with 8+ years of experience building solutions for complex B2B and B2C
 systems. Working with multiple startups, I have led and delivered several end-to-end products,
 covering requirement gathering, system design docs, cloud infra setup, stakeholder management,
 mentoring peers and code reviews.
 
 ## Skills
 
-Django, Python, FastAPI, PostgreSQL, Celery, Redis, JavaScript, Node.js, Express.js, MongoDB,
-Kafka, Pub/Sub, AWS, GCP
+Django, Python, FastAPI, PostgreSQL, agentic AI, tool calling, RAG, Celery, Redis, JavaScript,
+Node.js, Express.js, MongoDB, Kafka, Pub/Sub, Kubernetes, AWS, GCP
 
 ## Professional Experience
 
@@ -24,8 +24,21 @@ images with guided drones and running health checks with in-house OpenCV models.
 
 #### Software Development Engineer - III (May 2025 – Present)
 
+- Designed and built Sherlock, an internal agentic AI platform for incident triage, in production
+  at Detect: it monitors production systems, autonomously triages and debugs issues, and cut
+  resolution time by ~80%.
+- Extended Sherlock with an AI code reviewer that checks pull requests against ticket
+  requirements, and with tiered long-term memory using RAG over past investigations and user
+  feedback.
+- Owns GCP infrastructure for the Detect platform, maintaining a 99.5% uptime SLA through scalable
+  architecture, CI/CD pipelines, service health checks and observability.
+- Contributing to SOC 2 certification by aligning access control, scheduled backups and
+  observability with audit requirements.
 - Leading technical integration with Nova Scotia Power, one of the largest electrical power
-  companies in Canada.
+  companies in Canada, building a scalable data sync pipeline and APIs that serve a mobile
+  application.
+- Also reviews code and design docs, joins cross-team technical discussions and incident reviews,
+  mentors peers and coordinates sprints and releases.
 
 ### Attentive.ai — Noida, India
 
@@ -88,6 +101,9 @@ performance dashboard and related services for certified insurance agents.
 
 ## Awards
 
+- Detect Recognition, Detect Technologies (Dec 2025): for delivering business-critical
+  integrations with Nova Scotia Power and taking initiatives to streamline Detect's platform
+  backend.
 - Tech Trendsetter, Attentive.ai (Nov 2024): annual award for exploring new technologies,
   improving system observability and writing technical documentation for peers.
 - Innovation, Attentive.ai (Dec 2022): annual award for proactively finding system bottlenecks,
@@ -100,15 +116,6 @@ performance dashboard and related services for certified insurance agents.
 ## Education
 
 - B.Tech - Information Technology, HMRITM, Delhi, India (2014 – 2018)
-
-## Personal Projects
-
-### dex-cli
-
-A command-line Python tool to download and manage manga and comics from various platforms. It
-supports mangadex.org, uses multithreading for concurrent downloads without blocking on I/O, uses
-the Factory design pattern so more providers can be added, and has unit tests with ~60% coverage.
-Planned: cloud storage integration, and a better pagination strategy for third-party APIs.
 
 ## Volunteer Experience
 

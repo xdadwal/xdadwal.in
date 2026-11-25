@@ -13,6 +13,10 @@ Facts worked out in advance from his resume, and details the resume leaves out.
 ## Career at a glance
 
 - He started as a software engineer in August 2018, the year he finished his B.Tech.
+- He is a software engineer and an AI engineer: after years of backend work he now builds
+  production AI agents. At Detect he designed and built Sherlock, an agentic AI platform that
+  triages and debugs production incidents (about 80% faster resolution), then added an AI code
+  reviewer and RAG-based long-term memory to it. His own project logpose is an agent library.
 - Three companies, five roles, in order: Renewbuy.com, Attentive.ai, Detect Technologies (current).
 - Time at each company: Renewbuy.com about 3 years 5 months (August 2018 to January 2022, his
   longest), Attentive.ai about 3 years 2 months (January 2022 to March 2025), Detect Technologies
@@ -24,20 +28,21 @@ Facts worked out in advance from his resume, and details the resume leaves out.
   Engineer III at Attentive.ai (January 2025).
 - Industries: insurance, software for US landscaping companies and property measurement, and
   powerline inspection for Canadian utilities.
-- Three awards: Rockstar Rookie (Renewbuy.com, April 2019, about 8 months after he joined),
-  Innovation (Attentive.ai, December 2022) and Tech Trendsetter (Attentive.ai, November 2024).
+- Four awards: Rockstar Rookie (Renewbuy.com, April 2019, about 8 months after he joined),
+  Innovation (Attentive.ai, December 2022), Tech Trendsetter (Attentive.ai, November 2024) and
+  Detect Recognition (Detect Technologies, December 2025).
 - Leading people: he led a team of 8 developers at Attentive.ai. He has mentored Python learners
   on Exercism since 2023.
 - Four projects of his own, listed under Projects: logpose, ohara, the-django-boilerplate and
   dex-cli.
-- Recurring themes: performance and observability, services designed from scratch, data and
-  event pipelines, and security and access control.
+- Recurring themes: AI agents and LLM tooling, performance and observability, services designed
+  from scratch, data and event pipelines, and security and access control.
 
 ## Each role in his own words, with technologies the resume does not name
 
 - Detect Technologies (https://detectinspections.com), Software Development Engineer III: takes
-  care of infrastructure, automations, observability, platform reliability and AI tooling. Uses
-  GCP, Kubernetes (K8s) and Datadog.
+  care of infrastructure, automations, observability, platform reliability and AI tooling, such
+  as Sherlock. Uses GCP, Kubernetes (K8s) and Datadog.
 - Attentive.ai (https://attentive.ai), Software Engineer III: the PDF search service used FastAPI
   and Elasticsearch.
 - Attentive.ai, Software Engineer II: led a team of 8 devs building SaaS products; he says it was
