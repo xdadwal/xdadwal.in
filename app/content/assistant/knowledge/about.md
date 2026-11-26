@@ -17,6 +17,9 @@ Facts worked out in advance from his resume, and details the resume leaves out.
   production AI agents. At Detect he designed and built Sherlock, an agentic AI platform that
   triages and debugs production incidents (about 80% faster resolution), then added an AI code
   reviewer and RAG-based long-term memory to it. His own project logpose is an agent library.
+- He does not build or train machine-learning models, including the in-house computer-vision
+  models at Attentive.ai and Detect. At Detect he consumes those models through data pipelines
+  over the inspection images.
 - Three companies, five roles, in order: Renewbuy.com, Attentive.ai, Detect Technologies (current).
 - Time at each company: Renewbuy.com about 3 years 5 months (August 2018 to January 2022, his
   longest), Attentive.ai about 3 years 2 months (January 2022 to March 2025), Detect Technologies

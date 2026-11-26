@@ -288,7 +288,7 @@
           const items = await response.json();
           // Don't overwrite a conversation or new chat the visitor started while history was loading.
           if (!this.loaded) {
-            this.messages = items.map((item) => this.message(item.role, item.text));
+            this.messages = items.map((item) => this.newMessage(item.role, item.text));
             this.scrollDown();
           }
           this.loaded = true;
@@ -305,7 +305,9 @@
       },
 
       // `id` arrives when an answer finishes; `rating` is the visitor's thumbs up or down on it.
-      message(role, text) {
+      // Not named `message`: methods called from inside the message list run with its loop
+      // variables in scope, where `this.message` is the current message, not this function.
+      newMessage(role, text) {
         return { role, text, failed: false, id: null, rating: null };
       },
 
@@ -389,8 +391,10 @@
       retry(index) {
         if (this.streaming) return;
         const text = this.messages[index].text;
-        // Drop the failed question and anything shown after it, then send it again.
-        this.messages.splice(index);
+        // Drop the failed question and its partial answer, if any, then send it again as the
+        // newest message. Other unsent questions keep their own Retry buttons.
+        const partial = this.messages[index + 1]?.role === 'assistant';
+        this.messages.splice(index, partial ? 2 : 1);
         this.send(text);
       },
 
@@ -401,7 +405,7 @@
         this.notice = '';
         this.loaded = true;
 
-        this.messages.push(this.message('user', text), this.message('assistant', ''));
+        this.messages.push(this.newMessage('user', text), this.newMessage('assistant', ''));
         // Read them back through Alpine's reactive proxy so later edits re-render.
         const mine = this.messages[this.messages.length - 2];
         const reply = this.messages[this.messages.length - 1];
