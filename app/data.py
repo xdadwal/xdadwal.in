@@ -1,3 +1,16 @@
+# Who the site is about, for search engines (structured data) and AI agents (llms.txt). Keep it to
+# what the pages show; employer and skills can join once the home page mentions them.
+PROFILE: dict = {
+    "name": "Akshay Dadwal",
+    "handle": "xdadwal",
+    "job_title": "Software Engineer",
+    "summary": "Backend engineer, homelab tinkerer and builder.",
+    "profiles": {
+        "GitHub": "https://github.com/xdadwal",
+        "LinkedIn": "https://linkedin.com/in/xdadwal",
+    },
+}
+
 PROJECTS: list[dict] = [
     {
         "title": "logpose",

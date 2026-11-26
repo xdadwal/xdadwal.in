@@ -4,12 +4,16 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager, suppress
 from datetime import timedelta
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exception_handlers import http_exception_handler
+from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import LOGPOSE_REQUIRED_ENV, get_settings, missing_logpose_env
-from app.routes import assistant, blog, home, projects
+from app.routes import assistant, blog, home, projects, site_files
 from app.services.assistant import build_runtime, cleanup_loop, close_runtime
+from app.templates import templates
 
 logger = logging.getLogger(__name__)
 
@@ -46,3 +50,13 @@ app.include_router(home.router)
 app.include_router(projects.router)
 app.include_router(blog.router)
 app.include_router(assistant.router)
+app.include_router(site_files.router)
+
+
+@app.exception_handler(StarletteHTTPException)
+async def not_found_page(request: Request, exc: StarletteHTTPException) -> Response:
+    """A page, not JSON, for people who follow a dead link. The API and static files keep JSON."""
+    path = request.url.path
+    if exc.status_code == 404 and not path.startswith(("/api/", "/static/")):
+        return templates.TemplateResponse(request, "404.html", {}, status_code=404)
+    return await http_exception_handler(request, exc)

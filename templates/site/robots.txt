@@ -1,0 +1,5 @@
+# Every crawler is welcome, AI ones included. The chat API is not content.
+User-agent: *
+Disallow: /api/
+
+Sitemap: {{ site_url }}/sitemap.xml

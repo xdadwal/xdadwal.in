@@ -1,0 +1,33 @@
+{#- A short markdown profile for AI agents (llmstxt.org). Plain text, so no HTML escaping. -#}
+{% autoescape false -%}
+# {{ profile.name }}
+
+> {{ profile.job_title }}. {{ profile.summary }} This is his personal site, xdadwal.in.
+{% if assistant_panel %}
+An assistant on every page of the site answers questions about his work, projects and writing.
+{% endif %}
+## Pages
+
+- [Home]({{ site_url }}/): who he is, with links to his profiles
+- [Projects]({{ site_url }}/projects): things he has built
+{%- if posts %}
+- [Blog]({{ site_url }}/blog): his writing
+{%- endif %}
+
+## Projects
+{% for project in projects %}
+- [{{ project.title }}]({{ project.url }}): {{ project.description }}
+{%- endfor %}
+{%- if posts %}
+
+## Writing
+{% for post in posts %}
+- [{{ post.title }}]({{ site_url }}/blog/{{ post.slug }}): {{ post.description }}
+{%- endfor %}
+{%- endif %}
+
+## Profiles
+{% for name, url in profile.profiles.items() %}
+- [{{ name }}]({{ url }})
+{%- endfor %}
+{% endautoescape %}

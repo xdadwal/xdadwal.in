@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}xdadwal.in — Software Engineer{% endblock %}
+{% block title %}Akshay Dadwal — Software Engineer{% endblock %}
+
+{% block head %}
+<script type="application/ld+json">{{ structured_data | safe }}</script>
+{% endblock %}
 
 {% block content %}
 <main class="flex-1 flex flex-col pt-[72px]">

@@ -42,15 +42,16 @@ subagents are your team.
 
 ```
 app/
-  main.py              # FastAPI app instance, router registration, static mount
+  main.py              # FastAPI app instance, router registration, static mount, HTML 404 page
   config.py            # pydantic-settings config (env vars, loaded via get_settings())
   templates.py         # Jinja2Templates instance + custom filters
-  data.py              # PROJECTS content
+  data.py              # PROJECTS content; PROFILE (structured data and llms.txt)
   routes/
     home.py            # GET /
     projects.py        # GET /projects
     blog.py            # GET /blog, GET /blog/{slug}
     assistant.py       # POST /api/chat, GET /api/chat/history, POST /api/chat/reset, POST /api/chat/feedback
+    site_files.py      # GET /robots.txt, /sitemap.xml, /llms.txt, /favicon.ico
   models/
     blog.py            # BlogPost Pydantic model
     assistant.py       # assistant content-file and API models
@@ -60,6 +61,7 @@ app/
     assistant_content.py  # reads content/assistant/*.md, builds the system prompt
     rate_limit.py      # in-memory limits for the chat endpoint
     feedback.py        # visitors' thumbs up/down on answers (SQLite)
+    site_meta.py       # JSON-LD structured data for the home page
   content/
     posts/             # blog posts as .md files with frontmatter
     assistant/         # everything the chat assistant knows and says (.md files)
@@ -69,11 +71,14 @@ templates/
   projects/index.html
   blog/index.html
   blog/post.html
+  404.html             # page for unknown URLs (the API and /static keep JSON 404s)
   partials/assistant.html  # chat panel (Alpine component), included from base.html
+  site/                # robots.txt, sitemap.xml and llms.txt templates
 static/
   css/
     input.css          # Tailwind v4 source (@import + @theme tokens)
     output.css         # compiled output (do not edit by hand; gitignored)
+  img/                 # link-preview image and favicons
 scripts/               # export_chats.py, show_context.py, show_feedback.py (python -m scripts.<name>)
 requirements.txt       # runtime + dev dependencies (pip)
 ruff.toml              # ruff linter/formatter config
@@ -163,6 +168,8 @@ ruff-format. Pre-commit runs both on every commit.
 - All transitions via Tailwind utility classes only (`transition-colors duration-200`, etc.); no custom CSS transitions
 - Explicit `width` and `height` on all `<img>` elements
 - Material Symbols icons use `font-variation-settings: 'FILL' 0, 'wght' 300` (outlined, light weight)
+- The icon font loads only the icons listed in `icon_names` in `base.html`: add any new icon there
+  (alphabetical order), or it shows as its name in plain text
 - HTML root element always has `class="dark"` — dark mode only, no toggle
 
 ## Blog / Content
