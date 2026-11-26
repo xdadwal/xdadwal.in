@@ -19,6 +19,7 @@ from logpose import (
     RunEnd,
     SessionHandle,
     TextDelta,
+    current_time,
     openai_decision_guard,
     pattern_guard,
 )
@@ -97,7 +98,10 @@ def build_runtime(settings: Settings) -> AssistantRuntime:
         model=settings.assistant_model,
         system=build_system_prompt(),
         max_tokens=settings.assistant_max_output_tokens,
-        max_iterations=1,
+        # The model has no idea of today's date; it calls current_time for questions such as how
+        # long he has been in a role. One round trip for that call, one for the answer, one spare.
+        tools=[current_time],
+        max_iterations=3,
         run_timeout=settings.assistant_run_timeout_seconds,
         provider_turn_timeout=settings.assistant_turn_timeout_seconds,
         extra=extra,
