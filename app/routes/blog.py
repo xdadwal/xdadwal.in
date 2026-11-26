@@ -6,7 +6,7 @@ from app.templates import templates
 router = APIRouter()
 
 
-@router.get("/blog")
+@router.api_route("/blog", methods=["GET", "HEAD"])
 async def blog_index(request: Request):
     posts = get_all_posts()
     all_tags = sorted({tag for post in posts for tag in post.tags})
@@ -17,7 +17,7 @@ async def blog_index(request: Request):
     )
 
 
-@router.get("/blog/{slug}")
+@router.api_route("/blog/{slug}", methods=["GET", "HEAD"])
 async def blog_post(request: Request, slug: str):
     post = get_post(slug)
     if not post:

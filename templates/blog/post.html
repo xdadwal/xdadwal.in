@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block title %}{{ post.title }} — xdadwal.in{% endblock %}
+{% block description %}{{ post.description }}{% endblock %}
+{% block og_type %}article{% endblock %}
 
 {% block content %}
 <main class="max-w-container-max mx-auto px-gutter pt-[140px] pb-section-gap">

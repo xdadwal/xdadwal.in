@@ -25,6 +25,8 @@ def missing_logpose_env() -> list[str]:
 
 class Settings(BaseSettings):
     app_name: str = "xdadwal.in"
+    # Public address, for absolute links in page metadata (link previews need them).
+    site_url: str = "https://xdadwal.in"
     debug: bool = False
 
     # Assistant behaviour. Credentials, endpoint, database path and tracing are logpose's

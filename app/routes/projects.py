@@ -6,7 +6,7 @@ from app.templates import templates
 router = APIRouter()
 
 
-@router.get("/projects")
+@router.api_route("/projects", methods=["GET", "HEAD"])
 async def projects(request: Request):
     return templates.TemplateResponse(
         request,
