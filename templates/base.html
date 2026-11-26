@@ -4,6 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}xdadwal.in{% endblock %}</title>
+  <meta name="description" content="{% block description %}Akshay Dadwal: backend engineer, homelab tinkerer and builder. Projects, blog posts and an assistant that answers questions about his work.{% endblock %}" />
+  <link rel="canonical" href="{{ site_url }}{{ request.url.path }}" />
+
+  <!-- Link previews in chat apps and social sites. The image URL must be absolute. -->
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}" />
+  <meta property="og:site_name" content="xdadwal.in" />
+  <meta property="og:title" content="{{ self.title() }}" />
+  <meta property="og:description" content="{{ self.description() }}" />
+  <meta property="og:url" content="{{ site_url }}{{ request.url.path }}" />
+  <meta property="og:image" content="{{ site_url }}/static/img/og.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Akshay Dadwal, software engineer. xdadwal.in" />
+  <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

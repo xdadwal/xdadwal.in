@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}Projects — xdadwal.in{% endblock %}
+{% block description %}Things Akshay Dadwal has built: {{ projects|map(attribute="title")|join(", ") }}.{% endblock %}
 
 {% block content %}
 <main class="flex-1 mt-[72px]">
