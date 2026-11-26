@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+{#- The blog is listed only once it has a published post: an empty page is not worth indexing. #}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>{{ site_url }}/</loc></url>
+  <url><loc>{{ site_url }}/projects</loc></url>
+{%- if posts %}
+  <url><loc>{{ site_url }}/blog</loc><lastmod>{{ posts[0].date.isoformat() }}</lastmod></url>
+{%- for post in posts %}
+  <url><loc>{{ site_url }}/blog/{{ post.slug }}</loc><lastmod>{{ post.date.isoformat() }}</lastmod></url>
+{%- endfor %}
+{%- endif %}
+</urlset>
