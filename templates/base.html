@@ -24,14 +24,13 @@
   <link rel="icon" href="/static/img/icon-192.png" type="image/png" sizes="192x192" />
   <link rel="apple-touch-icon" href="/static/img/apple-touch-icon.png" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  {# Only the icons the templates use, in alphabetical order (Google Fonts requires it), including
-     ones set from x-text. An icon missing from this list shows as its name in plain text. #}
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&icon_names=add,arrow_back,arrow_right_alt,arrow_upward,auto_awesome,check,close,content_copy,expand_more,mail,menu,open_in_new,refresh,stop,thumb_down,thumb_up&display=swap" rel="stylesheet" />
+  {# Fonts are served from static/fonts/ (see scripts/fetch_fonts.py) and declared in output.css.
+     The text fonts above the fold start downloading now instead of after the CSS arrives; these
+     URLs must match the ones in static/css/fonts.css exactly, or the browser downloads twice. #}
+  <link rel="preload" href="{{ static_url('fonts/hanken-grotesk-latin.woff2') }}" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="{{ static_url('fonts/jetbrains-mono-latin.woff2') }}" as="font" type="font/woff2" crossorigin />
 
-  <link rel="stylesheet" href="/static/css/output.css" />
+  <link rel="stylesheet" href="{{ static_url('css/output.css') }}" />
 
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
 
